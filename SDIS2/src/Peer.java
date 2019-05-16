@@ -1,5 +1,7 @@
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -7,75 +9,93 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
-public class Peer {
+public class Peer implements peer.RMIStub{
 
     private static String peerId;
     private static String peerAcessPoint;
     private static String protocolVersion;
+    private static int sender;
+    private static int port;
 
     private static ServerSocket serverSocket;
-
-    //private static Storage storage;
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
 
         initAtributes(args);
-
         initializeServerSocket();
 
-        //RMIStub stub = null;
+        peer.RMIStub stub;
         Peer peer = new Peer();
 
-        String clientSentence;
+        stub = (peer.RMIStub) UnicastRemoteObject.exportObject(peer, 0);
 
-        while (true) {
-            Socket connectionSocket = serverSocket.accept();
-            BufferedReader inFromClient =
-                    new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-            DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-            clientSentence = inFromClient.readLine();
-            System.out.println("Received: " + clientSentence);
-        }
-
-
-        //stub = (RMIStub) UnicastRemoteObject.exportObject(peer, 0);
-
-        /*try {
+        try {
             Registry reg = LocateRegistry.getRegistry();
             reg.rebind(peerAcessPoint, stub);
-
             System.out.println("Peer connected through getRegistry");
         } catch (Exception e) {
             Registry reg = LocateRegistry.createRegistry(1099);
             reg.rebind(peerAcessPoint, stub);
-
             System.out.println("Peer connected through createRegistry");
         }
-        */
 
+        if(sender == 2) {
+           sendMessage();
+        }
     }
 
     private static void initAtributes(String[] args) throws IOException, ClassNotFoundException {
         protocolVersion = args[0];
         peerId = (args[1]);
         peerAcessPoint = args[2];
-
-        //storage = new Storage(1000000);
+        port = Integer.parseInt(args[3]);
+        sender = Integer.parseInt(args[4]);
     }
 
     private static void initializeServerSocket() {
-        int port = 0;
 
-        SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
+        Thread th = new Thread(new PeerReceiver(port));
+        th.start();
+    }
 
-        try {
-            serverSocket = serverSocketFactory.createServerSocket(port);
-        } catch (IOException e) {
-            System.err.println("Error creating server socket");
-            e.printStackTrace();
-        }
+    private static void sendMessage() throws IOException {
 
-        //Thread th = new Thread(serverSocket);
+        SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        Socket clientSocket = socketFactory.createSocket(InetAddress.getByName("localhost"), 49999);
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+        //BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String sentence = "opa duriola \n";
+        outToServer.writeBytes(sentence + 'n');
+
+    }
+
+    @Override
+    public void backupProtocol(String file, int replicationDeg) throws RemoteException {
+
+    }
+
+    @Override
+    public void restoreProtocol(String file) throws RemoteException {
+
+    }
+
+    @Override
+    public void deleteProtocol(String file) throws RemoteException {
+
+    }
+
+    @Override
+    public void reclaimProtocol(int reservedSpace) throws RemoteException {
+
+    }
+
+    @Override
+    public String stateProtocol() throws RemoteException {
+        return null;
     }
 }
