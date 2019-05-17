@@ -1,10 +1,10 @@
 
-## Como invocar as funções
+## Como invocar as funÃ§Ãµes
 
 ### Server
 
-java -Djavax.net.ssl.keyStore=server_keys -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=truststore -Djavax.net.ssl.trustStorePassword=123456 Server
+java -Djavax.net.ssl.keyStore=server.keys -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=truststore -Djavax.net.ssl.trustStorePassword=123456 Server
 
 ### Client
 
-java -Djavax.net.ssl.keyStore=client_keys -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=truststore -Djavax.net.ssl.trustStorePassword=123456 Client
+java -Djavax.net.ssl.keyStore=client.keys -Djavax.net.ssl.keyStorePassword=123456 -Djavax.net.ssl.trustStore=truststore -Djavax.net.ssl.trustStorePassword=123456 Client
