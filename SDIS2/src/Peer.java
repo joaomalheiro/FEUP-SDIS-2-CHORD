@@ -22,12 +22,12 @@ public class Peer implements peer.RMIStub{
     private static int sender;
     private static int port;
 
-    private static ServerSocket serverSocket;
-
     public static void main(String args[]) throws IOException, ClassNotFoundException {
 
         initAtributes(args);
         initializeServerSocket();
+
+        setJSSE();
 
         peer.RMIStub stub;
         Peer peer = new Peer();
@@ -49,6 +49,12 @@ public class Peer implements peer.RMIStub{
         }
     }
 
+    private static void setJSSE() {
+        System.setProperty("-Djavax.net.ssl.keyStorePassword", "123456");
+        System.setProperty("-Djavax.net.ssl.trustStore", "truststore");
+        System.setProperty("-Djavax.net.ssl.trustStorePassword", "123456");
+    }
+
     private static void initAtributes(String[] args) throws IOException, ClassNotFoundException {
         protocolVersion = args[0];
         peerId = (args[1]);
@@ -65,8 +71,13 @@ public class Peer implements peer.RMIStub{
 
     private static void sendMessage() throws IOException {
 
+        System.setProperty("-Djavax.net.ssl.keyStore", "client.keys");
+
+        String cypher_suite = "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256";
+
         SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        Socket clientSocket = socketFactory.createSocket(InetAddress.getByName("localhost"), 49999);
+        SSLSocket clientSocket = (SSLSocket) socketFactory.createSocket(InetAddress.getByName("localhost"), 49999);
+        clientSocket.startHandshake();
         DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
         //BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String sentence = "opa duriola \n";

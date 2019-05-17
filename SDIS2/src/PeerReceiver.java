@@ -9,7 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class PeerReceiver implements Runnable {
-    private ServerSocket serverSocket;
+    private SSLServerSocket serverSocket;
     private int port;
 
     PeerReceiver (int port) {
@@ -19,21 +19,25 @@ public class PeerReceiver implements Runnable {
     @Override
     public void run() {
 
+        System.setProperty("-Djavax.net.ssl.keyStore", "server.keys");
+
         serverSocket = null;
         String clientSentence = null;
 
         SSLServerSocketFactory serverSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
 
         try {
-            serverSocket = serverSocketFactory.createServerSocket(port);
+            serverSocket = (SSLServerSocket) serverSocketFactory.createServerSocket(port);
+            serverSocket.setNeedClientAuth(true);
+            serverSocket.setEnabledProtocols(serverSocket.getSupportedProtocols());
         } catch (IOException e) {
             System.err.println("Error creating server socket");
             e.printStackTrace();
         }
-        Socket connectionSocket = null;
+        SSLSocket connectionSocket = null;
         try {
             System.out.println("Server socket thread created and ready to receive");
-            connectionSocket = serverSocket.accept();
+            connectionSocket = (SSLSocket)serverSocket.accept();
         } catch (IOException e) {
             e.printStackTrace();
         }
