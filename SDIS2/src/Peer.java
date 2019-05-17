@@ -2,10 +2,7 @@ import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,7 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
-public class Peer implements peer.RMIStub{
+public class Peer implements RMIStub {
 
     private static String peerId;
     private static String peerAcessPoint;
@@ -29,10 +26,10 @@ public class Peer implements peer.RMIStub{
 
         setJSSE();
 
-        peer.RMIStub stub;
+        RMIStub stub;
         Peer peer = new Peer();
 
-        stub = (peer.RMIStub) UnicastRemoteObject.exportObject(peer, 0);
+        stub = (RMIStub) UnicastRemoteObject.exportObject(peer, 0);
 
         try {
             Registry reg = LocateRegistry.getRegistry();
@@ -50,9 +47,10 @@ public class Peer implements peer.RMIStub{
     }
 
     private static void setJSSE() {
-        System.setProperty("-Djavax.net.ssl.keyStorePassword", "123456");
-        System.setProperty("-Djavax.net.ssl.trustStore", "truststore");
-        System.setProperty("-Djavax.net.ssl.trustStorePassword", "123456");
+        System.setProperty("javax.net.ssl.keyStore", "server.keys");
+        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
+        System.setProperty("javax.net.ssl.trustStore", "truststore");
+        System.setProperty("javax.net.ssl.trustStorePassword", "123456");
     }
 
     private static void initAtributes(String[] args) throws IOException, ClassNotFoundException {
@@ -70,8 +68,6 @@ public class Peer implements peer.RMIStub{
     }
 
     private static void sendMessage() throws IOException {
-
-        System.setProperty("-Djavax.net.ssl.keyStore", "client.keys");
 
         String cypher_suite = "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256";
 

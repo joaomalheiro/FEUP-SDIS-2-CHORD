@@ -19,7 +19,7 @@ public class PeerReceiver implements Runnable {
     @Override
     public void run() {
 
-        System.setProperty("-Djavax.net.ssl.keyStore", "server.keys");
+        //System.setProperty("-Djavax.net.ssl.keyStore", "client.keys");
 
         serverSocket = null;
         String clientSentence = null;
