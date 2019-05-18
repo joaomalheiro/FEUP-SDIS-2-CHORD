@@ -152,11 +152,12 @@ public class ChordInfo implements Runnable{
         return res.toString(16);
     }
 
+    //NOT TESTED !!
     public String searchSuccessor(String senderHash)
     {
         String message = null;
 
-        //Ainda só há um node no sistema, por isso o predecessor e o sucessor (1ª entrada da finger table) serão o peer que enviou a mensagem
+        //Ainda só há um node no sistema, por isso o predecessor e o sucessor serão o peer que enviou a mensagem e vice-versa
         if(this.predecessor == null)
         {
             this.predecessor = senderHash;
@@ -167,19 +168,28 @@ public class ChordInfo implements Runnable{
         }
 
         else
-        {   //Se a hash do predecessor atual (PA) deste peer(P) for menor que a hash enviada, então o peer que enviou a mensagem(PS)
-            //será o novo predecessor e P será o sucessor de PS
-            if(Integer.parseInt(this.predecessor) < Integer.parseInt(senderHash))
-            {
-                this.predecessor = senderHash;
-                message = "SUCCESSOR 1.0 " + this.senderId + " " + this.peerHash + " \r\n\r\n";
-            }
+        {   //Se o node S que enviou a mensagem, e sendo N o node que a recebeu, se encontrar em [N,sucessor(N)]
+            // então sucessor(S) = sucessor(N)
+            if(Integer.parseInt(senderHash) > Integer.parseInt(this.peerHash))
+                if(Integer.parseInt(senderHash) < Integer.parseInt(this.fingerTable.get(0)))
+                {
+                    this.predecessor = senderHash;
+                    message = "SUCCESSOR 1.0 " + this.senderId + " " + this.fingerTable.get(0) + " \r\n\r\n";
+                }
 
-            //Se a condição anterior não acontecer, então este peer não é o successor, e é necessário enviar a mensagem para um
-            // novo peer da finger table que esteja antes do peer que enviou a mensagem
+            //Se a condição anterior não acontecer, então vai-se procurar o predecessor com a chava mais alta,
+                // mas que seja menor que a chave node que enviou a mensagem
             else
             {
-                //TODO
+                for(int i = this.fingerTable.size() - 1; i >= 0; i--)
+                {
+                    String key = fingerTable.get(i);
+                    if(Integer.parseInt(key) < Integer.parseInt(senderHash))
+                    {
+                        //TODO
+                    }
+
+                }
             }
         }
 
