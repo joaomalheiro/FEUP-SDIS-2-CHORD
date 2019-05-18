@@ -1,15 +1,16 @@
-import javax.net.ServerSocketFactory;
-import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
+import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Peer implements RMIStub {
 
@@ -25,6 +26,7 @@ public class Peer implements RMIStub {
         initializeServerSocket();
 
         setJSSE();
+        setChord();
 
         RMIStub stub;
         Peer peer = new Peer();
@@ -81,6 +83,63 @@ public class Peer implements RMIStub {
 
     }
 
+    public static void setChord()
+    {
+        int mBytes = 1; //hash size in bytes
+        String peerHash;
+        ArrayList<Integer> fingerTable = new ArrayList<> (mBytes * 8);
+
+        peerHash = getPeerHash(mBytes);
+        getFingerTable(peerHash, fingerTable, mBytes * 8);
+    }
+
+    public static String getPeerHash(int hashSize)
+    {
+        String originalString = null;
+        MessageDigest md = null;
+        StringBuilder result = new StringBuilder();
+
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            System.err.println("Error getting instance of MessageDigest");
+            System.exit(1);
+        }
+
+        originalString = "" + port;
+
+        md.update(originalString.getBytes());
+        byte[] hashBytes = md.digest();
+
+        byte[] trimmedHashBytes = Arrays.copyOf(hashBytes, hashSize);
+
+
+        for (byte byt : trimmedHashBytes)
+            result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
+
+        return result.toString();
+    }
+
+    private static void getFingerTable(String hash, ArrayList<Integer> fingerTable, int numberEntries) {
+
+        BigInteger hashBI = new BigInteger(hash, 16);
+
+        for(int i = 0; i < numberEntries; i++)
+        {
+            String nextKey = calculateNextKey(hashBI, i, numberEntries);
+            //Falta código para obter o peer a partir da nextKey
+        }
+    }
+
+    private static String calculateNextKey(BigInteger hash, int index, int m)
+    {
+        BigInteger add = new BigInteger(String.valueOf((int) Math.pow(2, index)));
+        BigInteger mod =  new BigInteger(String.valueOf((int) Math.pow(2, m)));
+
+        BigInteger res = hash.add(add).mod(mod);
+        return res.toString(16);
+    }
+
     @Override
     public void backupProtocol(String file, int replicationDeg) throws RemoteException {
 
@@ -105,4 +164,6 @@ public class Peer implements RMIStub {
     public String stateProtocol() throws RemoteException {
         return null;
     }
+
+
 }
