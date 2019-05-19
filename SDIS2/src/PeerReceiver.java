@@ -73,6 +73,7 @@ public class PeerReceiver implements Runnable {
             }
 
             System.out.println("Received: " + clientSentence);
+            Auxiliary.handleMessage(clientSentence);
         }
     }
 }

@@ -8,7 +8,7 @@ public class ChordInfo implements Runnable{
     private static int mBytes = 1; //hash size in bytes
     private static String peerHash;
     private static String predecessor = null;
-    private static ArrayList<String> fingerTable = new ArrayList<> (mBytes * 8);
+    public static ArrayList<String> fingerTable = new ArrayList<> (mBytes * 8);
 
     ChordInfo()
     {
@@ -136,49 +136,41 @@ public class ChordInfo implements Runnable{
     }
 
     //NOT TESTED !!
-    public String searchSuccessor(String senderHash)
+    public static String searchSuccessor(String senderKey)
     {
         String message = null;
 
-        //Ainda só há um node no sistema, por isso o predecessor e o sucessor serão o peer que enviou a mensagem e vice-versa
-        if(ChordInfo.predecessor == null)
-        {
-            ChordInfo.predecessor = senderHash;
-            for(String finger: fingerTable)
-                finger = senderHash;
-
-            message = "SUCCESSOR 1.0 " + " " + ChordInfo.peerHash + " \r\n\r\n";
+        /*Se o node S que enviou a mensagem, e sendo N o node que a recebeu, se encontrar em [N,sucessor(N)]
+        então sucessor(S) = sucessor(N)*/
+        if(Integer.parseInt(senderKey) > Integer.parseInt(peerHash)) {
+            if (Integer.parseInt(senderKey) < Integer.parseInt(ChordInfo.fingerTable.get(0)))
+                message = "SUCCESSOR " + Peer.protocolVersion + " " + ChordInfo.fingerTable.get(0) + " \r\n\r\n";
         }
 
+        /*Se a condição anterior não acontecer, então vai-se procurar o predecessor com a chava mais alta,
+          mas que seja menor que a chave do node que enviou a mensagem*/
         else
-        {   /*Se o node S que enviou a mensagem, e sendo N o node que a recebeu, se encontrar em [N,sucessor(N)]
-              então sucessor(S) = sucessor(N)*/
-            if(Integer.parseInt(senderHash) > Integer.parseInt(ChordInfo.peerHash))
-                if(Integer.parseInt(senderHash) < Integer.parseInt(ChordInfo.fingerTable.get(0)))
-                {
-                    ChordInfo.predecessor = senderHash;
-                    message = "SUCCESSOR 1.0 " + " " + ChordInfo.fingerTable.get(0) + " \r\n\r\n";
-                }
-
-            /*Se a condição anterior não acontecer, então vai-se procurar o predecessor com a chava mais alta,
-              mas que seja menor que a chave node que enviou a mensagem*/
-            else
+        {
+            for(int i = ChordInfo.fingerTable.size() - 1; i >= 0; i--)
             {
-                for(int i = ChordInfo.fingerTable.size() - 1; i >= 0; i--)
-                {
-                    String key = fingerTable.get(i);
-                    if(Integer.parseInt(key) < Integer.parseInt(senderHash))
-                    {
-                        //TODO
-                    }
-
+                String key = fingerTable.get(i);
+                if(Integer.parseInt(key) < Integer.parseInt(senderKey)) {
+                    //mandar mensagem para fingerTable[i]
                 }
             }
+            message = "SUCCESSOR " + Peer.protocolVersion + " " + peerHash + " \r\n\r\n";
         }
 
         return message;
     }
 
+    public static void setSuccessor(String key)
+    {
+        if(fingerTable.size() == 0)
+            fingerTable.add(key);
+
+        fingerTable.set(0,key);
+    }
 
     @Override
     public void run() {
