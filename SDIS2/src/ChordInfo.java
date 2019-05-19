@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class ChordInfo implements Runnable{
 
@@ -17,12 +18,14 @@ public class ChordInfo implements Runnable{
     private String peerHash;
     private String predecessor = null;
     private ArrayList<String> fingerTable = new ArrayList<> (mBytes * 8);
+    public ScheduledExecutorService executor;
 
 
-    ChordInfo(int port, int referencedPort, int senderId)
+    ChordInfo(int port, int referencedPort, int senderId, ScheduledExecutorService executor)
     {
         this.port = port;
         this.senderId = senderId;
+        this.executor = executor;
         setChord(referencedPort);
     }
 
@@ -42,7 +45,7 @@ public class ChordInfo implements Runnable{
         System.out.println("Peer hash = " + Integer.parseInt(this.peerHash,16) +" (Hexadecimal value = " + this.peerHash + ")");
 
         if(referencedPort != 0)
-            getSuccessor(referencedPort);
+            executor.submit(new SucessorRequest(referencedPort, port, this.peerHash));
 
         getFingerTable(fingerTable, mBytes * 8, referencedPort);
 
@@ -77,7 +80,6 @@ public class ChordInfo implements Runnable{
 
         byte[] trimmedHashBytes = Arrays.copyOf(hashBytes, hashSize);
 
-
         for (byte byt : trimmedHashBytes)
             result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
 
@@ -89,19 +91,19 @@ public class ChordInfo implements Runnable{
      *
      * @param referencedPort port of existing peer that was passed by argument
      */
-    private void getSuccessor(int referencedPort) {
+    private void getSuccessor(int referencedPort, String key) {
 
-        SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        /*SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket clientSocket = null;
         try {
             clientSocket = (SSLSocket) socketFactory.createSocket(InetAddress.getByName("localhost"), referencedPort);
             clientSocket.startHandshake();
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-            String sentence = "GETSUCCESSOR 1.0 " + this.senderId + " " + this.peerHash + " \r\n\r\n";
+            String sentence = "GETSUCCESSOR 1.0 " + this.senderId + " " + key + " \r\n\r\n";
             outToServer.writeBytes(sentence + 'n');
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
     }
 
@@ -125,8 +127,8 @@ public class ChordInfo implements Runnable{
             }
 
             String nextKey = calculateNextKey(hashBI, i, numberEntries);
-            //TODO fazer código para encontrar peer responsável pela chave
-            // (se não existir peer com aquela chave (OG), o peer responsável vai ser aquele com menor chave >= OG)
+            //getSuccessor(referencedPort, nextKey);
+            // se não existir peer com esta chave (K), o peer responsável vai ser aquele com menor chave >= K
         }
     }
 

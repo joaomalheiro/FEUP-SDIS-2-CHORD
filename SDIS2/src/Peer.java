@@ -3,6 +3,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 
 public class Peer implements RMIStub {
@@ -12,6 +14,7 @@ public class Peer implements RMIStub {
     private static String protocolVersion;
     private static int sender;
     private static int port;
+    public static ScheduledExecutorService executor;
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
 
@@ -24,12 +27,13 @@ public class Peer implements RMIStub {
         // Caso o peer seja o primeiro, só existem 5 args.
         // Caso contrário, o 6º argumento é o port do 1º peer
 
+        executor = Executors.newScheduledThreadPool(100);
+
         if(args.length > 5)
             referencedPort = Integer.parseInt(args[5]);
-
-        //Cria a thread que irá gerir o chord
-        Thread th = new Thread(new ChordInfo(port, referencedPort, sender));
-        th.start();
+        
+        ChordInfo ci = new ChordInfo(port, referencedPort, sender, executor);
+        executor.submit(ci);
 
         RMIStub stub;
         Peer peer = new Peer();
@@ -60,7 +64,7 @@ public class Peer implements RMIStub {
         Thread th = new Thread(new PeerReceiver(port));
         th.start();
     }
-    
+
     @Override
     public void backupProtocol(String file, int replicationDeg) throws RemoteException {
 
