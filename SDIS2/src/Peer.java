@@ -6,33 +6,25 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-
 public class Peer implements RMIStub {
-
-    private static String peerId;
-    private static String peerAcessPoint;
+    private static String peerAccessPoint;
     private static String protocolVersion;
-    private static int sender;
     private static int port;
-    public static ScheduledExecutorService executor;
+    private static int referencedPort;
+    private static ScheduledExecutorService executor;
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
+        if(args.length != 4)
+            return;
 
         initAtributes(args);
-        initializeServerSocket();
 
-        int referencedPort = 0;
-
-        //Um peer necessita de ter informações sobre pelo um peer de maneira.
-        // Caso o peer seja o primeiro, só existem 5 args.
-        // Caso contrário, o 6º argumento é o port do 1º peer
+        Thread th = new Thread(new PeerReceiver(port));
+        th.start();
 
         executor = Executors.newScheduledThreadPool(100);
-
-        if(args.length > 5)
-            referencedPort = Integer.parseInt(args[5]);
         
-        ChordInfo ci = new ChordInfo(port, referencedPort, sender, executor);
+        ChordInfo ci = new ChordInfo(port, referencedPort, executor);
         executor.submit(ci);
 
         RMIStub stub;
@@ -42,27 +34,20 @@ public class Peer implements RMIStub {
 
         try {
             Registry reg = LocateRegistry.getRegistry();
-            reg.rebind(peerAcessPoint, stub);
+            reg.rebind(peerAccessPoint, stub);
             System.out.println("Peer connected through getRegistry");
         } catch (Exception e) {
             Registry reg = LocateRegistry.createRegistry(1099);
-            reg.rebind(peerAcessPoint, stub);
+            reg.rebind(peerAccessPoint, stub);
             System.out.println("Peer connected through createRegistry");
         }
     }
 
     private static void initAtributes(String[] args) throws IOException, ClassNotFoundException {
         protocolVersion = args[0];
-        peerId = (args[1]);
-        peerAcessPoint = args[2];
-        port = Integer.parseInt(args[3]);
-        sender = Integer.parseInt(args[4]);
-    }
-
-    private static void initializeServerSocket() {
-
-        Thread th = new Thread(new PeerReceiver(port));
-        th.start();
+        peerAccessPoint = args[1];
+        port = Integer.parseInt(args[2]);
+        referencedPort = Integer.parseInt(args[3]);
     }
 
     @Override
@@ -89,6 +74,4 @@ public class Peer implements RMIStub {
     public String stateProtocol() throws RemoteException {
         return null;
     }
-
-
 }

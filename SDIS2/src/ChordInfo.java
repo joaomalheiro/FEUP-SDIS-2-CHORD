@@ -1,9 +1,4 @@
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -11,20 +6,16 @@ import java.util.Arrays;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class ChordInfo implements Runnable{
-
     private int port;
-    private int senderId;
     private int mBytes = 1; //hash size in bytes
     private String peerHash;
     private String predecessor = null;
     private ArrayList<String> fingerTable = new ArrayList<> (mBytes * 8);
-    public ScheduledExecutorService executor;
+    private ScheduledExecutorService executor;
 
-
-    ChordInfo(int port, int referencedPort, int senderId, ScheduledExecutorService executor)
+    ChordInfo(int port, int referencedPort, ScheduledExecutorService executor)
     {
         this.port = port;
-        this.senderId = senderId;
         this.executor = executor;
         setChord(referencedPort);
     }
@@ -166,7 +157,7 @@ public class ChordInfo implements Runnable{
             for(String finger: fingerTable)
                 finger = senderHash;
 
-            message = "SUCCESSOR 1.0 " + this.senderId + " " + this.peerHash + " \r\n\r\n";
+            message = "SUCCESSOR 1.0 " + " " + this.peerHash + " \r\n\r\n";
         }
 
         else
@@ -176,7 +167,7 @@ public class ChordInfo implements Runnable{
                 if(Integer.parseInt(senderHash) < Integer.parseInt(this.fingerTable.get(0)))
                 {
                     this.predecessor = senderHash;
-                    message = "SUCCESSOR 1.0 " + this.senderId + " " + this.fingerTable.get(0) + " \r\n\r\n";
+                    message = "SUCCESSOR 1.0 " + " " + this.fingerTable.get(0) + " \r\n\r\n";
                 }
 
             //Se a condição anterior não acontecer, então vai-se procurar o predecessor com a chava mais alta,
