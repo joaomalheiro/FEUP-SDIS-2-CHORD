@@ -7,15 +7,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class Peer implements RMIStub {
-    public static String peerAccessPoint;
+    private static String peerAccessPoint;
     public static String protocolVersion;
     public static int port;
-    public static int referencedPort;
+    public static int referencedPort = 0;
     public static ScheduledExecutorService executor;
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
-        if(args.length != 4)
+        if(args.length != 4 && args.length != 3)
             return;
+
+        if(args.length == 4)
+            referencedPort = Integer.parseInt(args[3]);
 
         initAtributes(args);
 
@@ -47,7 +50,6 @@ public class Peer implements RMIStub {
         protocolVersion = args[0];
         peerAccessPoint = args[1];
         port = Integer.parseInt(args[2]);
-        referencedPort = Integer.parseInt(args[3]);
     }
 
     @Override
