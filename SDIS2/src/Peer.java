@@ -7,11 +7,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class Peer implements RMIStub {
-    private static String peerAccessPoint;
-    private static String protocolVersion;
-    private static int port;
-    private static int referencedPort;
-    private static ScheduledExecutorService executor;
+    public static String peerAccessPoint;
+    public static String protocolVersion;
+    public static int port;
+    public static int referencedPort;
+    public static ScheduledExecutorService executor;
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
         if(args.length != 4)
@@ -24,7 +24,7 @@ public class Peer implements RMIStub {
 
         executor = Executors.newScheduledThreadPool(100);
         
-        ChordInfo ci = new ChordInfo(port, referencedPort, executor);
+        ChordInfo ci = new ChordInfo();
         executor.submit(ci);
 
         RMIStub stub;
