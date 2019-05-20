@@ -1,26 +1,19 @@
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-
 public class SuccessorRequest implements Runnable{
 
     private int referencedPort;
     private int port;
-    private String key;
 
-    SuccessorRequest(int referencedPort, int port, String key)
+    SuccessorRequest(int referencedPort, int port)
     {
         this.referencedPort = referencedPort;
         this.port = port;
-        this.key = key;
     }
 
     @Override
     public void run() {
 
-        String sentence = "GETSUCCESSOR " + Peer.protocolVersion + " " + key + " " + port + " \r\n\r\n";
+        String [] params = new String[]{ChordInfo.peerHash, String.valueOf(this.port)};
+        String sentence = Auxiliary.addHeader("GETSUCCESSOR", params);
 
         Auxiliary.sendMessage(sentence, "localhost", String.valueOf(this.referencedPort));
 

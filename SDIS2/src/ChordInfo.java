@@ -6,9 +6,9 @@ import java.util.Arrays;
 
 public class ChordInfo implements Runnable{
     private static int mBytes = 1; //hash size in bytes
-    private static String peerHash;
+    public static String peerHash;
     private static String predecessor = null;
-    public static ArrayList<String> fingerTable = new ArrayList<> (mBytes * 8);
+    private static ArrayList<String> fingerTable = new ArrayList<> (mBytes * 8);
 
     ChordInfo()
     {
@@ -27,13 +27,17 @@ public class ChordInfo implements Runnable{
 
         System.out.println("Peer hash = " + Integer.parseInt(ChordInfo.peerHash,16) +" (Hexadecimal value = " + ChordInfo.peerHash + ")");
 
-        if(Peer.referencedPort != 0)
-            Peer.executor.submit(new SucessorRequest(Peer.referencedPort, Peer.port, ChordInfo.peerHash));
+        //se não for o primeiro peer no sistema
+        if(Peer.referencedPort != 0) {
+            Peer.executor.submit(new SuccessorRequest(Peer.referencedPort, Peer.port));
+        }
 
-        getFingerTable(fingerTable, mBytes * 8, Peer.referencedPort);
-
-        for(int i = 0; i < fingerTable.size(); i++)
-            System.out.println("Index #" + i + " = " + fingerTable.get(i));
+        else {
+            for(int i = 0; i < mBytes * 8; i++) {
+                fingerTable.add(peerHash);
+                System.out.println("Index #" + i + " = " + fingerTable.get(i));
+            }
+        }
     }
 
 
@@ -70,25 +74,6 @@ public class ChordInfo implements Runnable{
     }
 
     /**
-     * Sends message to known peer, asking for successor
-     *
-     * @param referencedPort port of existing peer that was passed by argument
-     */
-    private void getSuccessor(int referencedPort, String key) {
-        /*SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        SSLSocket clientSocket = null;
-        try {
-            clientSocket = (SSLSocket) socketFactory.createSocket(InetAddress.getByName("localhost"), referencedPort);
-            clientSocket.startHandshake();
-            DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-            String sentence = "GETSUCCESSOR 1.0 " + this.senderId + " " + key + " \r\n\r\n";
-            outToServer.writeBytes(sentence + 'n');
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-    }
-
-    /**
      * Fills initial finger table
      *
      * @param fingerTable struct to be filled
@@ -101,12 +86,6 @@ public class ChordInfo implements Runnable{
 
         for(int i = 0; i < numberEntries; i++)
         {
-            if(referencedPort == 0)
-            {
-                fingerTable.add(ChordInfo.peerHash);
-                continue;
-            }
-
             String nextKey = calculateNextKey(hashBI, i, numberEntries);
             //getSuccessor(referencedPort, nextKey);
             // se não existir peer com esta chave (K), o peer responsável vai ser aquele com menor chave >= K
@@ -136,15 +115,20 @@ public class ChordInfo implements Runnable{
     }
 
     //NOT TESTED !!
-    public static String searchSuccessor(String senderKey)
+    public static String searchSuccessor(String senderKey, String senderPort)
     {
         String message = null;
+        String parameters[];
+
+        long senderKeyLong = Long.parseLong(senderKey, 16);
 
         /*Se o node S que enviou a mensagem, e sendo N o node que a recebeu, se encontrar em [N,sucessor(N)]
         então sucessor(S) = sucessor(N)*/
-        if(Integer.parseInt(senderKey) > Integer.parseInt(peerHash)) {
-            if (Integer.parseInt(senderKey) < Integer.parseInt(ChordInfo.fingerTable.get(0)))
-                message = "SUCCESSOR " + Peer.protocolVersion + " " + ChordInfo.fingerTable.get(0) + " \r\n\r\n";
+        if(senderKeyLong > Long.parseLong(peerHash,16)) {
+            if (senderKeyLong < Long.parseLong(fingerTable.get(0),16)) {
+                parameters = new String[]{fingerTable.get(0)};
+                message = Auxiliary.addHeader("SUCCESSOR", parameters);
+            }
         }
 
         /*Se a condição anterior não acontecer, então vai-se procurar o predecessor com a chava mais alta,
@@ -154,11 +138,16 @@ public class ChordInfo implements Runnable{
             for(int i = ChordInfo.fingerTable.size() - 1; i >= 0; i--)
             {
                 String key = fingerTable.get(i);
-                if(Integer.parseInt(key) < Integer.parseInt(senderKey)) {
-                    //mandar mensagem para fingerTable[i]
-                }
+                //TODO testar isto quando se preencher a finger table no stabilize
+                if(Long.parseLong(fingerTable.get(0),16) > Long.parseLong(peerHash,16))
+                    if (Long.parseLong(fingerTable.get(0),16) < senderKeyLong) {
+                        parameters = new String[]{senderKey, senderPort};
+                        return Auxiliary.addHeader("GETSUCCESSOR", parameters);
+                    }
             }
-            message = "SUCCESSOR " + Peer.protocolVersion + " " + peerHash + " \r\n\r\n";
+
+            parameters = new String[]{peerHash};
+            message = Auxiliary.addHeader("SUCCESSOR", parameters);
         }
 
         return message;
@@ -166,8 +155,9 @@ public class ChordInfo implements Runnable{
 
     public static void setSuccessor(String key)
     {
-        if(fingerTable.size() == 0)
+        if(fingerTable.size() == 0) {
             fingerTable.add(key);
+        }
 
         fingerTable.set(0,key);
     }

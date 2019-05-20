@@ -71,7 +71,7 @@ public class PeerReceiver implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            
             System.out.println("Received: " + clientSentence);
             Auxiliary.handleMessage(clientSentence);
         }
