@@ -12,10 +12,10 @@ public class SuccessorRequest implements Runnable{
     @Override
     public void run() {
 
-        String [] params = new String[]{ChordInfo.peerHash, String.valueOf(this.port)};
+        String [] params = new String[]{String.valueOf(ChordInfo.peerHash), String.valueOf(this.port)};
         String sentence = Auxiliary.addHeader("GETSUCCESSOR", params);
 
-        Auxiliary.sendMessage(sentence, "localhost", String.valueOf(this.referencedPort));
+        Auxiliary.sendMessage(sentence, "localhost", this.referencedPort);
 
         //Provavelmente vai ser preciso fazer algo que controle a chegada a resposta
     }

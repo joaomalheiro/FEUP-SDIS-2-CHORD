@@ -1,4 +1,6 @@
 import java.io.*;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -10,7 +12,16 @@ public class Peer implements RMIStub {
     private static String peerAccessPoint;
     public static String protocolVersion;
     public static int port;
-    public static int referencedPort = 0;
+    public static ConnectionInfo connectionInfo;
+
+    static {
+        try {
+            connectionInfo = new ConnectionInfo(InetAddress.getLocalHost().getHostAddress(), 0);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static ScheduledExecutorService executor;
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
@@ -18,7 +29,12 @@ public class Peer implements RMIStub {
             return;
 
         if(args.length == 4)
-            referencedPort = Integer.parseInt(args[3]);
+            connectionInfo.setPort(Integer.parseInt(args[3]));
+
+        if(args.length == 5) {
+            connectionInfo.setIp(args[3]);
+            connectionInfo.setPort(Integer.parseInt(args[4]));
+        }
 
         initAtributes(args);
 
@@ -29,6 +45,9 @@ public class Peer implements RMIStub {
         
         ChordInfo ci = new ChordInfo();
         executor.submit(ci);
+
+        if(connectionInfo.getPort() != 0)
+        Auxiliary.sendMessage("LOOKUP " + ci.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
 
         RMIStub stub;
         Peer peer = new Peer();

@@ -1,43 +1,55 @@
 import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class ChordInfo implements Runnable{
     private static int mBytes = 1; //hash size in bytes
-    public static String peerHash;
-    private static String predecessor = null;
-    private static ArrayList<String> fingerTable = new ArrayList<> (mBytes * 8);
+    public static BigInteger peerHash;
+    private static BigInteger predecessor = null;
+    private static ConcurrentSkipListMap<BigInteger, ConnectionInfo> fingerTable = new ConcurrentSkipListMap <> ();
 
-    ChordInfo()
-    {
-        setChord();
+    ChordInfo() throws UnknownHostException {
+        try {
+            setChord();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Calls functions to create hash and fill finger table
      */
-    private void setChord()
-    {
+    private void setChord() throws UnknownHostException {
         int mBytes = 1; //hash size in bytes
         ArrayList<String> fingerTable = new ArrayList<> (mBytes * 8);
 
-        ChordInfo.peerHash = getPeerHash(mBytes);
+        ChordInfo.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes),16));
 
-        System.out.println("Peer hash = " + Integer.parseInt(ChordInfo.peerHash,16) +" (Hexadecimal value = " + ChordInfo.peerHash + ")");
+        System.out.println("Peer hash = " + peerHash + "\n");
 
         //se não for o primeiro peer no sistema
-        if(Peer.referencedPort != 0) {
-            Peer.executor.submit(new SuccessorRequest(Peer.referencedPort, Peer.port));
+        if(Peer.connectionInfo.getPort() != 0) {
+            Peer.executor.submit(new SuccessorRequest(Peer.connectionInfo.getPort(), Peer.port));
         }
 
         else {
             for(int i = 0; i < mBytes * 8; i++) {
-                fingerTable.add(peerHash);
-                System.out.println("Index #" + i + " = " + fingerTable.get(i));
+                this.fingerTable.put(peerHash, new ConnectionInfo(InetAddress.getLocalHost().getHostAddress(), Peer.port));
             }
         }
+
+        printFingerTable();
+    }
+    
+    private void printFingerTable() {
+        System.out.println("FingerTable");
+        fingerTable.forEach((key, value) -> System.out.println(key + ":" + value));
     }
 
 
@@ -82,7 +94,7 @@ public class ChordInfo implements Runnable{
      */
 
     private void getFingerTable(ArrayList<String> fingerTable, int numberEntries, int referencedPort) {
-        BigInteger hashBI = new BigInteger(ChordInfo.peerHash, 16);
+        BigInteger hashBI = ChordInfo.peerHash;
 
         for(int i = 0; i < numberEntries; i++)
         {
@@ -114,6 +126,7 @@ public class ChordInfo implements Runnable{
         return res.toString(16);
     }
 
+    /*
     //NOT TESTED !!
     public static String searchSuccessor(String senderKey, String senderPort)
     {
@@ -122,9 +135,10 @@ public class ChordInfo implements Runnable{
 
         long senderKeyLong = Long.parseLong(senderKey, 16);
 
+
         /*Se o node S que enviou a mensagem, e sendo N o node que a recebeu, se encontrar em [N,sucessor(N)]
         então sucessor(S) = sucessor(N)*/
-        if(senderKeyLong > Long.parseLong(peerHash,16)) {
+        /*if(senderKeyLong > Long.parseLong(peerHash,16)) {
             if (senderKeyLong < Long.parseLong(fingerTable.get(0),16)) {
                 parameters = new String[]{fingerTable.get(0)};
                 message = Auxiliary.addHeader("SUCCESSOR", parameters);
@@ -133,7 +147,7 @@ public class ChordInfo implements Runnable{
 
         /*Se a condição anterior não acontecer, então vai-se procurar o predecessor com a chava mais alta,
           mas que seja menor que a chave do node que enviou a mensagem*/
-        else
+        /*else
         {
             for(int i = ChordInfo.fingerTable.size() - 1; i >= 0; i--)
             {
@@ -152,7 +166,30 @@ public class ChordInfo implements Runnable{
 
         return message;
     }
+    */
 
+    public static void lookup(BigInteger keyHash, ConnectionInfo senderInfo) throws UnknownHostException {
+
+        if((keyHash.compareTo(peerHash) == -1) && (keyHash.compareTo(predecessor) == 1)) {
+            Auxiliary.sendMessage("HELLO, IT'S ME : " + InetAddress.getLocalHost().getHostAddress() + " - " + Peer.port, senderInfo.getIp(), senderInfo.getPort());
+        } else {
+            searchClosestHash(keyHash, senderInfo);
+        }
+
+        //TODO: check if it faster clockwise or reverse clockwise when hashkey is smaller than own key
+    }
+
+    private static void searchClosestHash(BigInteger keyHash, ConnectionInfo senderInfo) throws UnknownHostException {
+
+        fingerTable.forEach((key, value) -> System.out.println(key + ":" + value));
+
+        for(BigInteger i: fingerTable.keySet()){
+            if(i.compareTo(keyHash) == 1) {
+                Auxiliary.sendMessage("HELLO, IT'S ME : " + InetAddress.getLocalHost().getHostAddress() + " - " + Peer.port, senderInfo.getIp(), senderInfo.getPort());
+            }
+        }
+    }
+    /*
     public static void setSuccessor(String key)
     {
         if(fingerTable.size() == 0) {
@@ -161,7 +198,7 @@ public class ChordInfo implements Runnable{
 
         fingerTable.set(0,key);
     }
-
+*/
     @Override
     public void run() {
 
