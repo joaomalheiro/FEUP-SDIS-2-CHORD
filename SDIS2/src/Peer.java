@@ -47,7 +47,7 @@ public class Peer implements RMIStub {
         executor.submit(ci);
 
         if(connectionInfo.getPort() != 0)
-        Auxiliary.sendMessage("LOOKUP " + ci.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
+            Auxiliary.sendMessage("LOOKUP " + ci.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
 
         RMIStub stub;
         Peer peer = new Peer();

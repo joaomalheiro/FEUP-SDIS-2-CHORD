@@ -8,8 +8,7 @@ import java.net.UnknownHostException;
 
 public class Auxiliary {
 
-    public static void handleMessage(String message)
-    {
+    public static void handleMessage(String message) throws UnknownHostException {
         String[] tokens = message.split(" ");
 
         switch(tokens[0])
@@ -18,19 +17,32 @@ public class Auxiliary {
                 //String response = ChordInfo.searchSuccessor(tokens[2], tokens[3]);
                 //sendMessage(response, "localhost", tokens[3]);
                 break;
-            case "SUCCESSOR":
-                //ChordInfo.setSuccessor(tokens[2]);
-                break;
+
             case "LOOKUP":
                 BigInteger keyHash = new BigInteger(tokens[1]);
                 String ipAdress = tokens[2];
                 int port = Integer.parseInt(tokens[3]);
+
+                if(ChordInfo.getFingerTable().size() == 0){
+                    Auxiliary.sendMessage("SUCCESSOR " + keyHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ipAdress, port);
+                    break;
+                }
 
                 try {
                     ChordInfo.lookup(keyHash, new ConnectionInfo(ipAdress, port));
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
+
+                break;
+
+            case "SUCCESSOR":
+                ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
+                Auxiliary.sendMessage("PREDECESSOR " + ChordInfo.peerHash, tokens[2], Integer.parseInt(tokens[3]));
+                break;
+            case "PREDECESSOR":
+                ChordInfo.peerHash = new BigInteger(tokens[1]);
+                break;
 
             default:
                 break;
