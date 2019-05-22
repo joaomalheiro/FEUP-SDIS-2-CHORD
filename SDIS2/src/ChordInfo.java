@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -11,7 +13,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class ChordInfo implements Runnable{
     private static int mBytes = 1; //hash size in bytes
     public static BigInteger peerHash;
-    private static BigInteger predecessor = null;
+    public static Pair<BigInteger, ConnectionInfo> predecessor = null;
     private static ConcurrentSkipListMap<BigInteger, ConnectionInfo> fingerTable = new ConcurrentSkipListMap <> ();
 
     ChordInfo() throws UnknownHostException {
@@ -172,7 +174,7 @@ public class ChordInfo implements Runnable{
 
     public static void lookup(BigInteger keyHash, ConnectionInfo senderInfo) throws UnknownHostException {
 
-        if((keyHash.compareTo(peerHash) == -1 || keyHash.compareTo(peerHash) == 0) && (keyHash.compareTo(predecessor) == 1)) {
+        if((keyHash.compareTo(peerHash) == -1 || keyHash.compareTo(peerHash) == 0) && (keyHash.compareTo(predecessor.getKey()) == 1)) {
             Auxiliary.sendMessage("HELLO, IT'S ME : " + InetAddress.getLocalHost().getHostAddress() + " - " + Peer.port, senderInfo.getIp(), senderInfo.getPort());
         } else {
             searchClosestHash(keyHash, senderInfo);
