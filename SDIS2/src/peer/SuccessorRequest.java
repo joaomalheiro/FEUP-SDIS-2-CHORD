@@ -1,7 +1,7 @@
 package peer;
 
 import chord.ChordInfo;
-import messages.Auxiliary;
+import messages.MessageForwarder;
 
 public class SuccessorRequest implements Runnable{
 
@@ -18,9 +18,9 @@ public class SuccessorRequest implements Runnable{
     public void run() {
 
         String [] params = new String[]{String.valueOf(ChordInfo.peerHash), String.valueOf(this.port)};
-        String sentence = Auxiliary.addHeader("GETSUCCESSOR", params);
+        String sentence = MessageForwarder.addHeader("GETSUCCESSOR", params);
 
-        Auxiliary.sendMessage(sentence, "localhost", this.referencedPort);
+        MessageForwarder.sendMessage(sentence, "localhost", this.referencedPort);
 
         //Provavelmente vai ser preciso fazer algo que controle a chegada a resposta
     }

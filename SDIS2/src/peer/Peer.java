@@ -2,7 +2,7 @@ package peer;
 
 import chord.ChordInfo;
 import chord.ConnectionInfo;
-import messages.Auxiliary;
+import messages.MessageForwarder;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -53,7 +53,7 @@ public class Peer implements RMIStub {
         executor.submit(ci);
 
         if(connectionInfo.getPort() != 0)
-            Auxiliary.sendMessage("LOOKUP " + ci.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
+            MessageForwarder.sendMessage("LOOKUP " + ci.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
 
         Stabilize stabilize = new Stabilize(ci);
         executor.scheduleAtFixedRate(stabilize,7,250, TimeUnit.MILLISECONDS);

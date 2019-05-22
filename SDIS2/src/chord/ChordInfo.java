@@ -1,6 +1,6 @@
 package chord;
 
-import messages.Auxiliary;
+import messages.MessageForwarder;
 import peer.FixFingers;
 import peer.Peer;
 import peer.SuccessorRequest;
@@ -169,8 +169,8 @@ public class ChordInfo implements Runnable{
         if(senderInfo.getHashedKey().compareTo(peerHash) == 1) {
             if (senderInfo.getHashedKey().compareTo(hashedKey) == -1) {
                 parameters = new String[]{ peerHash.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getIp())};
-                message = Auxiliary.addHeader("SUCCESSOR", parameters);
-                Auxiliary.sendMessage(message, senderInfo.getIp(), senderInfo.getPort() );
+                message = MessageForwarder.addHeader("SUCCESSOR", parameters);
+                MessageForwarder.sendMessage(message, senderInfo.getIp(), senderInfo.getPort() );
             }
         }
 
@@ -181,14 +181,14 @@ public class ChordInfo implements Runnable{
                 if(fingerTable.get(i).getHashedKey().compareTo(peerHash) == 1)
                     if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) == -1) {
                         parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
-                        message = Auxiliary.addHeader("LOOKUP", parameters);
-                        Auxiliary.sendMessage(message, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
+                        message = MessageForwarder.addHeader("LOOKUP", parameters);
+                        MessageForwarder.sendMessage(message, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
                     }
             }
 
             parameters = new String[]{predecessor.toString(),senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
-            message = Auxiliary.addHeader("SUCCESSOR", parameters);
-            Auxiliary.sendMessage(message, fingerTable.get(fingerTable.size()-1).getIp(), fingerTable.get(fingerTable.size()-1).getPort());
+            message = MessageForwarder.addHeader("SUCCESSOR", parameters);
+            MessageForwarder.sendMessage(message, fingerTable.get(fingerTable.size()-1).getIp(), fingerTable.get(fingerTable.size()-1).getPort());
         }
     }
 
@@ -200,7 +200,7 @@ public class ChordInfo implements Runnable{
 
         if(senderInfo.getHashedKey().compareTo(peerHash) == 1 && senderInfo.getHashedKey().compareTo(hashedKey) == -1) {
                 parameters = new String[]{senderInfo.getHashedKey().toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
-                return Auxiliary.addHeader("SUCCESSOR", parameters);
+                return MessageForwarder.addHeader("SUCCESSOR", parameters);
         }
 
         else {
@@ -209,13 +209,13 @@ public class ChordInfo implements Runnable{
                     if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) == -1) {
                         parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort()),
                                 fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
-                        return Auxiliary.addHeader("LOOKUP", parameters);
+                        return MessageForwarder.addHeader("LOOKUP", parameters);
                     }
             }
 
             try {
                 parameters = new String[]{senderInfo.getHashedKey().toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
-                return Auxiliary.addHeader("SUCCESSOR", parameters);
+                return MessageForwarder.addHeader("SUCCESSOR", parameters);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

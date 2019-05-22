@@ -1,8 +1,7 @@
 package peer;
 
 import chord.ChordInfo;
-import messages.Auxiliary;
-import peer.Peer;
+import messages.MessageForwarder;
 
 import java.net.InetAddress;
 
@@ -19,7 +18,7 @@ public class Stabilize implements Runnable {
                 if(ChordInfo.getFingerTable().get(0).getPort() == Peer.port  && ChordInfo.predecessor != null){
                     ChordInfo.getFingerTable().set(0, ChordInfo.predecessor);
                 } else if(ChordInfo.getFingerTable().get(0).getPort() != Peer.port ){
-                    Auxiliary.sendMessage("GET_PREDECESSOR " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ci.getFingerTable().get(0).getIp(), ci.getFingerTable().get(0).getPort());
+                    MessageForwarder.sendMessage("GET_PREDECESSOR " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ci.getFingerTable().get(0).getIp(), ci.getFingerTable().get(0).getPort());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

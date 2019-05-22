@@ -2,8 +2,7 @@ package peer;
 
 import chord.ChordInfo;
 import chord.ConnectionInfo;
-import messages.Auxiliary;
-import peer.Peer;
+import messages.MessageForwarder;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -36,7 +35,7 @@ public class FixFingers implements Runnable {
             for(int i = 0; i < 4; i++)
                 msg += tokens[i] + " ";
 
-            Auxiliary.sendMessage(msg, tokens[4], Integer.parseInt(tokens[5]));
+            MessageForwarder.sendMessage(msg, tokens[4], Integer.parseInt(tokens[5]));
         }
 
         Peer.executor.schedule(this, 1, TimeUnit.SECONDS);

@@ -1,6 +1,6 @@
 package peer;
 
-import messages.Auxiliary;
+import messages.MessageHandler;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -79,7 +79,7 @@ public class PeerReceiver implements Runnable {
             
             System.out.println("Received: " + clientSentence);
             try {
-                Auxiliary.handleMessage(clientSentence);
+                MessageHandler.handleMessage(clientSentence);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
