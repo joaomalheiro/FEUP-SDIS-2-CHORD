@@ -1,3 +1,5 @@
+import java.math.BigInteger;
+
 public class ConnectionInfo {
 
     private String ip;
@@ -26,6 +28,6 @@ public class ConnectionInfo {
 
     @Override
     public String toString() {
-        return this.ip + " - " + this.port;
+        return this.ip + " " + this.port;
     }
 }

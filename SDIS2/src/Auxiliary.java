@@ -28,11 +28,7 @@ public class Auxiliary {
                     break;
                 }
 
-                try {
-                    ChordInfo.lookup(keyHash, new ConnectionInfo(ipAdress, port));
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
+                    ChordInfo.searchSuccessor(keyHash, new ConnectionInfo(ipAdress, port));
 
                 break;
 
@@ -40,9 +36,22 @@ public class Auxiliary {
                 ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
                 Auxiliary.sendMessage("PREDECESSOR " + ChordInfo.peerHash, tokens[2], Integer.parseInt(tokens[3]));
                 break;
+
             case "PREDECESSOR":
                 ChordInfo.peerHash = new BigInteger(tokens[1]);
                 break;
+
+            case "GET_PREDECESSOR":
+                Auxiliary.sendMessage("RESPONSE_PREDECESSOR " + ChordInfo.getPredecessor() + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port , tokens[1] , Integer.parseInt(tokens[2]));
+                break;
+
+            case "RESPONSE_PREDECESSOR":
+                BigInteger predecessor = new BigInteger(tokens[1]);
+                if (predecessor == ChordInfo.getPredecessor()) {
+                    break;
+                }
+                break;
+
 
             default:
                 break;
@@ -59,7 +68,6 @@ public class Auxiliary {
         }
 
         return type + " " +
-                Peer.protocolVersion + " " +
                 result.toString() +
                 "\r\n\r\n";
     }
