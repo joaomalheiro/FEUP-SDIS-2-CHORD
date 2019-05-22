@@ -8,13 +8,13 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Peer implements RMIStub {
     private static String peerAccessPoint;
     public static String protocolVersion;
     public static int port;
     public static ConnectionInfo connectionInfo;
-
     static {
         try {
             connectionInfo = new ConnectionInfo(new BigInteger(String.valueOf(0)),InetAddress.getLocalHost().getHostAddress(), 0);
@@ -22,7 +22,6 @@ public class Peer implements RMIStub {
             e.printStackTrace();
         }
     }
-
     public static ScheduledExecutorService executor;
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
@@ -49,6 +48,9 @@ public class Peer implements RMIStub {
 
         if(connectionInfo.getPort() != 0)
             Auxiliary.sendMessage("LOOKUP " + ci.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
+
+        Stabilize stabilize = new Stabilize(ci);
+        executor.scheduleAtFixedRate(stabilize,7,250, TimeUnit.MILLISECONDS);
 
         RMIStub stub;
         Peer peer = new Peer();
