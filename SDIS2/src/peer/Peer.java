@@ -20,6 +20,7 @@ public class Peer implements RMIStub {
     private static String protocolVersion;
     public static int port;
     public static ConnectionInfo connectionInfo;
+    public static CheckPredecessor checkPredecessor;
     static {
         try {
             connectionInfo = new ConnectionInfo(new BigInteger(String.valueOf(0)),InetAddress.getLocalHost().getHostAddress(), 0);
@@ -46,8 +47,9 @@ public class Peer implements RMIStub {
         if(connectionInfo.getPort() != 0)
             MessageForwarder.sendMessage("LOOKUP " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
 
-        Stabilize stabilize = new Stabilize();
-        executor.scheduleAtFixedRate(stabilize,7,250, TimeUnit.MILLISECONDS);
+        checkPredecessor = new CheckPredecessor(500);
+        executor.scheduleAtFixedRate(checkPredecessor,0,1000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(new Stabilize(),0,500, TimeUnit.MILLISECONDS);
 
         RMIStub stub;
         Peer peer = new Peer();
