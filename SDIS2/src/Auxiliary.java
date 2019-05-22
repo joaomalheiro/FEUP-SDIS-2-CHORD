@@ -44,13 +44,16 @@ public class Auxiliary {
                 ipAddress = tokens[1];
                 port = Integer.parseInt(tokens[2]);
 
+                Auxiliary.sendMessage("PONG", ipAddress, port);
+                break;
+
             case "GET_PREDECESSOR":
                 Auxiliary.sendMessage("RESPONSE_PREDECESSOR " + ChordInfo.getPredecessor() + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port , tokens[1] , Integer.parseInt(tokens[2]));
                 break;
 
             case "RESPONSE_PREDECESSOR":
                 BigInteger predecessor = new BigInteger(tokens[1]);
-                if (predecessor == ChordInfo.getPredecessor()) {
+                if (predecessor.equals(ChordInfo.predecessor.getKey())) {
                     break;
                 }
                 break;
