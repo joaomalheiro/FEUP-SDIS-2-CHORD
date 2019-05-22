@@ -1,3 +1,9 @@
+package chord;
+
+import messages.Auxiliary;
+import peer.FixFingers;
+import peer.Peer;
+import peer.SuccessorRequest;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -13,7 +19,7 @@ public class ChordInfo implements Runnable{
     private static ArrayList<ConnectionInfo> fingerTable = new ArrayList<>(mBytes * 8);
     public static ConnectionInfo predecessor = null;
 
-    ChordInfo() throws UnknownHostException {
+    public ChordInfo() throws UnknownHostException {
         try {
             setChord();
         } catch (UnknownHostException e) {
@@ -43,7 +49,7 @@ public class ChordInfo implements Runnable{
 
         ChordInfo.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes, Peer.port),16));
 
-        System.out.println("Peer hash = " + peerHash + "\n");
+        System.out.println("peer.Peer hash = " + peerHash + "\n");
 
         //se não for o primeiro peer no sistema
         if(Peer.connectionInfo.getPort() != 0) {
@@ -64,7 +70,7 @@ public class ChordInfo implements Runnable{
 
     private void initFingerTable() throws UnknownHostException {
         for(int i = 0 ; i < mBytes * 8;  i++) {
-            fingerTable.add(new ConnectionInfo(peerHash,InetAddress.getLocalHost().getHostAddress(),Peer.port ));
+            fingerTable.add(new ConnectionInfo(peerHash,InetAddress.getLocalHost().getHostAddress(), Peer.port ));
         }
     }
 

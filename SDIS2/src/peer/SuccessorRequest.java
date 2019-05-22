@@ -1,9 +1,14 @@
+package peer;
+
+import chord.ChordInfo;
+import messages.Auxiliary;
+
 public class SuccessorRequest implements Runnable{
 
     private int referencedPort;
     private int port;
 
-    SuccessorRequest(int referencedPort, int port)
+    public SuccessorRequest(int referencedPort, int port)
     {
         this.referencedPort = referencedPort;
         this.port = port;

@@ -1,3 +1,10 @@
+package messages;
+
+import chord.ChordInfo;
+import chord.ConnectionInfo;
+import peer.CheckPredecessor;
+import peer.Peer;
+
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.DataOutputStream;
@@ -16,7 +23,7 @@ public class Auxiliary {
         switch(tokens[0])
         {
             case "GETSUCCESSOR":
-                //String response = ChordInfo.searchSuccessor(tokens[2], tokens[3]);
+                //String response = chord.ChordInfo.searchSuccessor(tokens[2], tokens[3]);
                 //sendMessage(response, "localhost", tokens[3]);
                 break;
             case "LOOKUP":
@@ -40,8 +47,8 @@ public class Auxiliary {
                 ChordInfo.peerHash = new BigInteger(tokens[1]);
                 ChordInfo.predecessor = new ConnectionInfo(ChordInfo.peerHash,tokens[2],Integer.parseInt(tokens[3]));
                 System.out.println(ChordInfo.predecessor.getHashedKey());
-                /* if(ChordInfo.getFingerTable().size() == 0) {
-                    ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
+                /* if(chord.ChordInfo.getFingerTable().size() == 0) {
+                    chord.ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
                 }*/
                 break;
             case "PING":
@@ -60,7 +67,7 @@ public class Auxiliary {
                 break;
 
             case "RESPONSE_PREDECESSOR":
-                //ConnectionInfo predecessor = new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
+                //chord.ConnectionInfo predecessor = new chord.ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
                 if(tokens[1].equals("NULL")){
                     Auxiliary.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[2], Integer.parseInt(tokens[3]));
                 } else {

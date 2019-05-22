@@ -1,3 +1,7 @@
+package peer;
+
+import messages.Auxiliary;
+
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
@@ -21,9 +25,9 @@ public class PeerReceiver implements Runnable {
      * Configures the keystore and truststore
      */
     private static void setJSSE() {
-        System.setProperty("javax.net.ssl.keyStore", "server.keys");
+        System.setProperty("javax.net.ssl.keyStore", "src/server.keys");
         System.setProperty("javax.net.ssl.keyStorePassword", "123456");
-        System.setProperty("javax.net.ssl.trustStore", "truststore");
+        System.setProperty("javax.net.ssl.trustStore", "src/truststore");
         System.setProperty("javax.net.ssl.trustStorePassword", "123456");
     }
 

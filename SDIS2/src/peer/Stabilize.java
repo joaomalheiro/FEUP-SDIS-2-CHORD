@@ -1,6 +1,10 @@
-import java.math.BigInteger;
+package peer;
+
+import chord.ChordInfo;
+import messages.Auxiliary;
+import peer.Peer;
+
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 public class Stabilize implements Runnable {
     private ChordInfo ci;

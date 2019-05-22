@@ -1,3 +1,9 @@
+package peer;
+
+import chord.ChordInfo;
+import messages.Auxiliary;
+import peer.Peer;
+
 import java.net.InetAddress;
 
 public class CheckPredecessor implements Runnable{

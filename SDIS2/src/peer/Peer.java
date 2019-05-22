@@ -1,3 +1,9 @@
+package peer;
+
+import chord.ChordInfo;
+import chord.ConnectionInfo;
+import messages.Auxiliary;
+
 import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -60,11 +66,11 @@ public class Peer implements RMIStub {
         try {
             Registry reg = LocateRegistry.getRegistry();
             reg.rebind(peerAccessPoint, stub);
-            System.out.println("Peer connected through getRegistry");
+            System.out.println("peer.Peer connected through getRegistry");
         } catch (Exception e) {
             Registry reg = LocateRegistry.createRegistry(1099);
             reg.rebind(peerAccessPoint, stub);
-            System.out.println("Peer connected through createRegistry");
+            System.out.println("peer.Peer connected through createRegistry");
         }
     }
 

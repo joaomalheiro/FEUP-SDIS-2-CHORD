@@ -1,3 +1,10 @@
+package peer;
+
+import chord.ChordInfo;
+import chord.ConnectionInfo;
+import messages.Auxiliary;
+import peer.Peer;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
