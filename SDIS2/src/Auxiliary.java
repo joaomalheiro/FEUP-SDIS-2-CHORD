@@ -10,6 +10,8 @@ public class Auxiliary {
 
     public static void handleMessage(String message) throws UnknownHostException {
         String[] tokens = message.split(" ");
+        String ipAddress;
+        int port;
 
         switch(tokens[0])
         {
@@ -17,21 +19,19 @@ public class Auxiliary {
                 //String response = ChordInfo.searchSuccessor(tokens[2], tokens[3]);
                 //sendMessage(response, "localhost", tokens[3]);
                 break;
-
             case "LOOKUP":
                 BigInteger keyHash = new BigInteger(tokens[1]);
-                String ipAdress = tokens[2];
-                int port = Integer.parseInt(tokens[3]);
+                ipAddress = tokens[2];
+                port = Integer.parseInt(tokens[3]);
 
                 if(ChordInfo.getFingerTable().size() == 0){
-                    Auxiliary.sendMessage("SUCCESSOR " + keyHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ipAdress, port);
+                    Auxiliary.sendMessage("SUCCESSOR " + keyHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ipAddress, port);
                     break;
                 }
 
-                    ChordInfo.searchSuccessor(keyHash, new ConnectionInfo(ipAdress, port));
+                ChordInfo.searchSuccessor(keyHash, new ConnectionInfo(ipAddress, port));
 
                 break;
-
             case "SUCCESSOR":
                 ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
                 Auxiliary.sendMessage("PREDECESSOR " + ChordInfo.peerHash, tokens[2], Integer.parseInt(tokens[3]));
@@ -40,6 +40,9 @@ public class Auxiliary {
             case "PREDECESSOR":
                 ChordInfo.peerHash = new BigInteger(tokens[1]);
                 break;
+            case "PING":
+                ipAddress = tokens[1];
+                port = Integer.parseInt(tokens[2]);
 
             case "GET_PREDECESSOR":
                 Auxiliary.sendMessage("RESPONSE_PREDECESSOR " + ChordInfo.getPredecessor() + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port , tokens[1] , Integer.parseInt(tokens[2]));
@@ -52,6 +55,9 @@ public class Auxiliary {
                 }
                 break;
 
+            case "PONG":
+                CheckPredecessor.dead = false;
+                break;
 
             default:
                 break;

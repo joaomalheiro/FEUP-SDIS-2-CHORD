@@ -13,8 +13,8 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class ChordInfo implements Runnable{
     private static int mBytes = 1; //hash size in bytes
     public static BigInteger peerHash;
-    private static BigInteger predecessor = null;
     private static ArrayList<Pair<BigInteger, ConnectionInfo>> fingerTable = new ArrayList<>();
+    public static Pair<BigInteger, ConnectionInfo> predecessor = null;
 
     ChordInfo() throws UnknownHostException {
         try {
@@ -24,7 +24,7 @@ public class ChordInfo implements Runnable{
         }
     }
 
-    public static BigInteger getPredecessor() {
+    public static Pair<BigInteger, ConnectionInfo> getPredecessor() {
         return predecessor;
     }
 
