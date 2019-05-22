@@ -6,7 +6,7 @@ import messages.MessageForwarder;
 import java.net.InetAddress;
 
 public class CheckPredecessor implements Runnable{
-    public static Boolean dead;
+    public static boolean dead;
     private int timeout;
 
     CheckPredecessor(int timeout){

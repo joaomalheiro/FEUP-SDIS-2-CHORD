@@ -72,8 +72,10 @@ public class MessageHandler {
                 break;
 
             case "PONG":
-                CheckPredecessor.dead = false;
-                Peer.checkPredecessor.notify();
+                synchronized(Peer.checkPredecessor){
+                    CheckPredecessor.dead = false;
+                    Peer.checkPredecessor.notify();
+                }
                 break;
 
             default:
