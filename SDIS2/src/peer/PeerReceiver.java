@@ -65,23 +65,29 @@ public class PeerReceiver implements Runnable {
             }
             BufferedReader inFromClient = null;
 
-            try {
-                inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            if(connectionSocket != null){
+                try {
+                    inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-            try {
-                clientSentence = inFromClient.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            
-            System.out.println("Received: " + clientSentence);
-            try {
-                MessageHandler.handleMessage(clientSentence);
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+                if(inFromClient != null) {
+                    try {
+                        clientSentence = inFromClient.readLine();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (clientSentence != null) {
+                        System.out.println("Received: " + clientSentence);
+                        try {
+                            MessageHandler.handleMessage(clientSentence);
+                        } catch (UnknownHostException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
         }
     }

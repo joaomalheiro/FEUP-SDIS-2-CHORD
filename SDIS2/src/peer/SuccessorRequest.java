@@ -16,7 +16,6 @@ public class SuccessorRequest implements Runnable{
 
     @Override
     public void run() {
-
         String [] params = new String[]{String.valueOf(ChordInfo.peerHash), String.valueOf(this.port)};
         String sentence = MessageForwarder.addHeader("GETSUCCESSOR", params);
 

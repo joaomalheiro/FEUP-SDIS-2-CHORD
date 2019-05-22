@@ -14,12 +14,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ChordInfo implements Runnable{
-    public static int mBytes = 1; //hash size in bytes
+    private final static int mBytes = 1; //hash size in bytes
     public static BigInteger peerHash;
     private static ArrayList<ConnectionInfo> fingerTable = new ArrayList<>(mBytes * 8);
     public static ConnectionInfo predecessor = null;
 
-    public ChordInfo() throws UnknownHostException {
+    public ChordInfo(){
         try {
             setChord();
         } catch (UnknownHostException e) {
@@ -36,11 +36,6 @@ public class ChordInfo implements Runnable{
     }
 
     public static int getM(){ return mBytes;}
-
-    public static void addEntry(BigInteger hashedID, String address, int port) {
-        fingerTable.add(new ConnectionInfo(hashedID, address, port));
-        printFingerTable();
-    }
 
     /**
      * Calls functions to create hash and fill finger table
@@ -74,11 +69,11 @@ public class ChordInfo implements Runnable{
         }
     }
 
-    public static void printFingerTable() {
+    private static void printFingerTable() {
         System.out.println("FingerTable");
 
-        for(int i = 0; i < fingerTable.size(); i++){
-            System.out.println(fingerTable.get(i).getHashedKey() + " : " +fingerTable.get(i).getIp() + " : " + fingerTable.get(i).getPort());
+        for(ConnectionInfo finger : fingerTable){
+            System.out.println(finger.getHashedKey() + " : " + finger.getIp() + " : " + finger.getPort());
         }
     }
 
@@ -88,7 +83,7 @@ public class ChordInfo implements Runnable{
      * @param hashSize hash size
      * @return hash
      */
-    public static String getPeerHash(int hashSize, int port)
+    private static String getPeerHash(int hashSize, int port)
     {
         String originalString;
         MessageDigest md = null;
@@ -112,25 +107,6 @@ public class ChordInfo implements Runnable{
             result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
 
         return result.toString();
-    }
-
-    /**
-     * Fills initial finger table
-     *
-     * @param fingerTable struct to be filled
-     * @param numberEntries finger table size (hash size in bits)
-     * @param referencedPort port of existing peer that was passed by argument
-     */
-
-    private void getFingerTable(ArrayList<String> fingerTable, int numberEntries, int referencedPort) {
-        BigInteger hashBI = ChordInfo.peerHash;
-
-        for(int i = 0; i < numberEntries; i++)
-        {
-            String nextKey = calculateNextKey(hashBI, i, numberEntries);
-            //getSuccessor(referencedPort, nextKey);
-            // se não existir peer com esta chave (K), o peer responsável vai ser aquele com menor chave >= K
-        }
     }
 
     /**
@@ -166,8 +142,8 @@ public class ChordInfo implements Runnable{
 
         /*Se o node S que enviou a mensagem, e sendo N o node que a recebeu, se encontrar em [N,sucessor(N)]
         então sucessor(S) = sucessor(N)*/
-        if(senderInfo.getHashedKey().compareTo(peerHash) == 1) {
-            if (senderInfo.getHashedKey().compareTo(hashedKey) == -1) {
+        if(senderInfo.getHashedKey().compareTo(peerHash) > 0) {
+            if (senderInfo.getHashedKey().compareTo(hashedKey) < 0) {
                 parameters = new String[]{ peerHash.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getIp())};
                 message = MessageForwarder.addHeader("SUCCESSOR", parameters);
                 MessageForwarder.sendMessage(message, senderInfo.getIp(), senderInfo.getPort() );
@@ -178,8 +154,8 @@ public class ChordInfo implements Runnable{
           mas que seja menor que a chave do node que enviou a mensagem*/
         else {
             for(int i = fingerTable.size()-1; i >= 0; i--){
-                if(fingerTable.get(i).getHashedKey().compareTo(peerHash) == 1)
-                    if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) == -1) {
+                if(fingerTable.get(i).getHashedKey().compareTo(peerHash) > 0)
+                    if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) < 0) {
                         parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
                         message = MessageForwarder.addHeader("LOOKUP", parameters);
                         MessageForwarder.sendMessage(message, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
@@ -198,15 +174,15 @@ public class ChordInfo implements Runnable{
 
         BigInteger hashedKey = fingerTable.get(0).getHashedKey();
 
-        if(senderInfo.getHashedKey().compareTo(peerHash) == 1 && senderInfo.getHashedKey().compareTo(hashedKey) == -1) {
+        if(senderInfo.getHashedKey().compareTo(peerHash) > 0 && senderInfo.getHashedKey().compareTo(hashedKey) < 0) {
                 parameters = new String[]{senderInfo.getHashedKey().toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
                 return MessageForwarder.addHeader("SUCCESSOR", parameters);
         }
 
         else {
             for(int i = fingerTable.size()-1; i >= 0; i--){
-                if(fingerTable.get(i).getHashedKey().compareTo(peerHash) == 1)
-                    if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) == -1) {
+                if(fingerTable.get(i).getHashedKey().compareTo(peerHash) > 0)
+                    if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) < 0) {
                         parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort()),
                                 fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
                         return MessageForwarder.addHeader("LOOKUP", parameters);

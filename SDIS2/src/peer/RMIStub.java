@@ -11,33 +11,38 @@ public interface RMIStub extends Remote {
 
     /**
      * Interface method to call the Backup Protocol class
-     * @param file
-     * @param replicationDeg
-     * @throws RemoteException
+     * @param file  file
+     * @param replicationDeg    replication degree
+     * @throws RemoteException  exception
      */
     void backupProtocol(String file, int replicationDeg) throws RemoteException;
 
     /**
      * Interface method to call the Restore Protocol class
-     * @param file
-     * @throws RemoteException
+     * @param file  file
+     * @throws RemoteException  exception
      */
     void restoreProtocol(String file) throws RemoteException;
 
     /**
      * Interface method to call the Delete Protocol class
-     * @param file
-     * @throws RemoteException
+     * @param file  file
+     * @throws RemoteException  exception
      */
     void deleteProtocol(String file) throws RemoteException;
 
     /**
      * Interface method to call the Reclaim Protocol class
-     * @param reservedSpace
-     * @throws RemoteException
+     * @param reservedSpace reserved space
+     * @throws RemoteException  exception
      */
     void reclaimProtocol(int reservedSpace) throws RemoteException;
 
+    /**
+     * Interface method to call the State Protocol class
+     * @return state
+     * @throws RemoteException  exception
+     */
     String stateProtocol() throws RemoteException;
 
 

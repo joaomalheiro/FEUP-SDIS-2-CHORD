@@ -37,15 +37,14 @@ public class ConnectionInfo {
 
     @Override
     public boolean equals(Object obj) {
-        ConnectionInfo ci = (ConnectionInfo) obj;
-        return (this.hashedKey == ci.getHashedKey() && this.port == ci.getPort() && this.ip == ci.getIp());
+        if(obj instanceof  ConnectionInfo){
+            ConnectionInfo ci = (ConnectionInfo) obj;
+            return (this.hashedKey.equals(ci.getHashedKey()) && this.port == ci.getPort() && this.ip.equals(ci.getIp()));
+        }
+        return false;
     }
 
     public BigInteger getHashedKey() {
         return hashedKey;
-    }
-
-    public void setHashedKey(BigInteger hashedKey) {
-        this.hashedKey = hashedKey;
     }
 }
