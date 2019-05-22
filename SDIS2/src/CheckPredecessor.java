@@ -8,7 +8,7 @@ public class CheckPredecessor implements Runnable{
             if (ChordInfo.predecessor != null) {
                 dead = true;
                 try {
-                    Auxiliary.sendMessage("PING " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ChordInfo.predecessor.getValue().getIp(), ChordInfo.predecessor.getValue().getPort());
+                    Auxiliary.sendMessage("PING " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ChordInfo.predecessor.getIp(), ChordInfo.predecessor.getPort());
                     wait(250);
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -25,11 +25,11 @@ public class Auxiliary {
                 port = Integer.parseInt(tokens[3]);
 
                 if(ChordInfo.getFingerTable().size() == 0){
-                    Auxiliary.sendMessage("SUCCESSOR " + keyHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ipAddress, port);
+                    System.out.println("Size 0");
+                    Auxiliary.sendMessage("SUCCESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ipAddress, port);
                     break;
                 }
-
-                ChordInfo.searchSuccessor(keyHash, new ConnectionInfo(ipAddress, port));
+                ChordInfo.searchSuccessor(new ConnectionInfo(keyHash,ipAddress, port));
 
                 break;
             case "SUCCESSOR":
@@ -53,7 +53,7 @@ public class Auxiliary {
 
             case "RESPONSE_PREDECESSOR":
                 BigInteger predecessor = new BigInteger(tokens[1]);
-                if (predecessor.equals(ChordInfo.predecessor.getKey())) {
+                if (predecessor.equals(ChordInfo.predecessor.getHashedKey())) {
                     break;
                 }
                 break;

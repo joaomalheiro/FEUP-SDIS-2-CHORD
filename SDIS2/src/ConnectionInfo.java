@@ -4,10 +4,12 @@ public class ConnectionInfo {
 
     private String ip;
     private int port;
+    private BigInteger hashedKey;
 
-    public ConnectionInfo(String ip, int port) {
+    public ConnectionInfo(BigInteger hashedKey, String ip, int port) {
         this.ip = ip;
         this.port = port;
+        this.hashedKey = hashedKey;
     }
 
     public String getIp() {
@@ -28,6 +30,14 @@ public class ConnectionInfo {
 
     @Override
     public String toString() {
-        return this.ip + " " + this.port;
+        return this.hashedKey + " " + this.ip + " " + this.port;
+    }
+
+    public BigInteger getHashedKey() {
+        return hashedKey;
+    }
+
+    public void setHashedKey(BigInteger hashedKey) {
+        this.hashedKey = hashedKey;
     }
 }

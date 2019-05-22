@@ -1,4 +1,5 @@
 import java.io.*;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -16,7 +17,7 @@ public class Peer implements RMIStub {
 
     static {
         try {
-            connectionInfo = new ConnectionInfo(InetAddress.getLocalHost().getHostAddress(), 0);
+            connectionInfo = new ConnectionInfo(new BigInteger(String.valueOf(0)),InetAddress.getLocalHost().getHostAddress(), 0);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
