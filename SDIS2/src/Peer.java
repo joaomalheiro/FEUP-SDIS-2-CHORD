@@ -50,7 +50,7 @@ public class Peer implements RMIStub {
             Auxiliary.sendMessage("LOOKUP " + ci.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
 
         Stabilize stabilize = new Stabilize(ci);
-        executor.scheduleAtFixedRate(stabilize,1000,250, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(stabilize,7,250, TimeUnit.MILLISECONDS);
 
         RMIStub stub;
         Peer peer = new Peer();

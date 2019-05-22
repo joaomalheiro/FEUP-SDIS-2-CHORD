@@ -50,10 +50,17 @@ public class ChordInfo implements Runnable{
         if(Peer.connectionInfo.getPort() != 0) {
             Peer.executor.submit(new SuccessorRequest(Peer.connectionInfo.getPort(), Peer.port));
         }
+        initFingerTable();
         printFingerTable();
     }
 
-    private static void printFingerTable() {
+    private void initFingerTable() throws UnknownHostException {
+        for(int i = 0 ; i < mBytes * 8;  i++) {
+            fingerTable.add(new ConnectionInfo(peerHash,InetAddress.getLocalHost().getHostAddress(),Peer.port ));
+        }
+    }
+
+    public static void printFingerTable() {
         System.out.println("FingerTable");
 
         for(int i = 0; i < fingerTable.size(); i++){

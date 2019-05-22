@@ -24,7 +24,7 @@ public class Auxiliary {
                 ipAddress = tokens[2];
                 port = Integer.parseInt(tokens[3]);
 
-                if(ChordInfo.getFingerTable().size() == 0){
+                if(ChordInfo.getFingerTable().get(0).getPort() == Peer.port){
                     System.out.println("Size 0");
                     Auxiliary.sendMessage("SUCCESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ipAddress, port);
                     break;
@@ -32,15 +32,17 @@ public class Auxiliary {
                 ChordInfo.searchSuccessor(new ConnectionInfo(keyHash,ipAddress, port));
                 break;
             case "SUCCESSOR":
-                ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
-                // Auxiliary.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[2], Integer.parseInt(tokens[3]));
+                ChordInfo.getFingerTable().set(0,new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
+                Auxiliary.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[2], Integer.parseInt(tokens[3]));
                 break;
 
             case "PREDECESSOR":
                 ChordInfo.peerHash = new BigInteger(tokens[1]);
-                if(ChordInfo.getFingerTable().size() == 0) {
+                ChordInfo.predecessor = new ConnectionInfo(ChordInfo.peerHash,tokens[2],Integer.parseInt(tokens[3]));
+                System.out.println(ChordInfo.predecessor.getHashedKey());
+                /* if(ChordInfo.getFingerTable().size() == 0) {
                     ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
-                }
+                }*/
                 break;
             case "PING":
                 ipAddress = tokens[1];
@@ -51,16 +53,16 @@ public class Auxiliary {
 
             case "GET_PREDECESSOR":
                 if(ChordInfo.predecessor == null){
-                    //ChordInfo.predecessor = new ConnectionInfo( BigInteger.valueOf(Integer.parseInt(ChordInfo.getPeerHash(mBytes, Peer.port),16)), tokens[1], Integer.parseInt(tokens[2]));
+                    Auxiliary.sendMessage("RESPONSE_PREDECESSOR " + "NULL" + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port , tokens[1] , Integer.parseInt(tokens[2]));
+                } else {
+                    Auxiliary.sendMessage("RESPONSE_PREDECESSOR " + ChordInfo.getPredecessor() + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port , tokens[1] , Integer.parseInt(tokens[2]));
                 }
-                Auxiliary.sendMessage("RESPONSE_PREDECESSOR " + ChordInfo.getPredecessor() + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port , tokens[1] , Integer.parseInt(tokens[2]));
                 break;
 
             case "RESPONSE_PREDECESSOR":
-                ConnectionInfo predecessor = new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
-                if (predecessor.equals(ChordInfo.getPredecessor())) {
-                    System.out.println("same");
-                    break;
+                //ConnectionInfo predecessor = new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
+                if(tokens[1].equals("NULL")){
+                    Auxiliary.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[2], Integer.parseInt(tokens[3]));
                 } else {
                     ChordInfo.getFingerTable().set(0, new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
                 }
