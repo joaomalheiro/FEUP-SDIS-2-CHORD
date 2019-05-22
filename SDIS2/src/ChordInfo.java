@@ -1,4 +1,3 @@
-import javafx.util.Pair;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -7,8 +6,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListMap;
 
 public class ChordInfo implements Runnable{
     private static int mBytes = 1; //hash size in bytes
@@ -32,6 +29,8 @@ public class ChordInfo implements Runnable{
         return fingerTable;
     }
 
+    public static int getM(){ return mBytes;}
+
     public static void addEntry(BigInteger hashedID, String address, int port) {
         fingerTable.add(new ConnectionInfo(hashedID, address, port));
         printFingerTable();
@@ -50,7 +49,14 @@ public class ChordInfo implements Runnable{
         if(Peer.connectionInfo.getPort() != 0) {
             Peer.executor.submit(new SuccessorRequest(Peer.connectionInfo.getPort(), Peer.port));
         }
+
+        for(int i = 0; i < mBytes; i++)
+            fingerTable.add(new ConnectionInfo(peerHash,"localhost",Peer.port));
+
         printFingerTable();
+
+        FixFingers ci = new FixFingers();
+        Peer.executor.submit(ci);
     }
     
     private static void printFingerTable() {
@@ -120,7 +126,7 @@ public class ChordInfo implements Runnable{
      * @param m hash size (bits)
      * @return next key's hash
      */
-    private String calculateNextKey(BigInteger hash, int index, int m)
+    public static String calculateNextKey(BigInteger hash, int index, int m)
     {
         //Exemplo
         // hash = 10, index = 0, m = 7 => 10 + 2^0 = 11
@@ -131,7 +137,7 @@ public class ChordInfo implements Runnable{
         BigInteger mod =  new BigInteger(String.valueOf((int) Math.pow(2, m)));
 
         BigInteger res = hash.add(add).mod(mod);
-        return res.toString(16);
+        return res.toString();
     }
 
 
@@ -171,6 +177,38 @@ public class ChordInfo implements Runnable{
         }
     }
 
+    public static String searchSuccessor2(ConnectionInfo senderInfo)
+    {
+        String message;
+        String parameters[];
+
+        BigInteger hashedKey = fingerTable.get(0).getHashedKey();
+
+        if(senderInfo.getHashedKey().compareTo(peerHash) == 1 && senderInfo.getHashedKey().compareTo(hashedKey) == -1) {
+                parameters = new String[]{senderInfo.getHashedKey().toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
+                return Auxiliary.addHeader("SUCCESSOR", parameters);
+        }
+
+        else {
+            for(int i = fingerTable.size()-1; i >= 0; i--){
+                if(fingerTable.get(i).getHashedKey().compareTo(peerHash) == 1)
+                    if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) == -1) {
+                        parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
+                        return Auxiliary.addHeader("LOOKUP", parameters);
+                    }
+            }
+
+            try {
+                parameters = new String[]{senderInfo.getHashedKey().toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
+                return Auxiliary.addHeader("SUCCESSOR", parameters);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        return null;
+    }
     /*
     public static void setSuccessor(String key)
     {
