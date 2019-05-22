@@ -11,13 +11,11 @@ public class Stabilize implements Runnable {
 
     @Override
     public void run() {
-
-        for(BigInteger i: ci.getFingerTable().keySet()){
             try {
-                Auxiliary.sendMessage("GET_PREDECESSOR " + InetAddress.getLocalHost().getHostAddress() + Peer.port, ci.getFingerTable().get(i).getIp(), ci.getFingerTable().get(i).getPort());
-            } catch (UnknownHostException e) {
+                if(ci.getFingerTable().size() != 0)
+                Auxiliary.sendMessage("GET_PREDECESSOR " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ci.getFingerTable().get(0).getIp(), ci.getFingerTable().get(0).getPort());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
     }
 }

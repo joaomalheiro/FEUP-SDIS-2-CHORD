@@ -1,3 +1,5 @@
+import org.omg.CORBA.CODESET_INCOMPATIBLE;
+
 import java.math.BigInteger;
 
 public class ConnectionInfo {
@@ -31,6 +33,12 @@ public class ConnectionInfo {
     @Override
     public String toString() {
         return this.hashedKey + " " + this.ip + " " + this.port;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        ConnectionInfo ci = (ConnectionInfo) obj;
+        return (this.hashedKey == ci.getHashedKey() && this.port == ci.getPort() && this.ip == ci.getIp());
     }
 
     public BigInteger getHashedKey() {

@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 public class ChordInfo implements Runnable{
-    private static int mBytes = 1; //hash size in bytes
+    public static int mBytes = 1; //hash size in bytes
     public static BigInteger peerHash;
     private static ArrayList<ConnectionInfo> fingerTable = new ArrayList<>(mBytes * 8);
     public static ConnectionInfo predecessor = null;
@@ -42,7 +42,7 @@ public class ChordInfo implements Runnable{
      */
     private void setChord() throws UnknownHostException {
 
-        ChordInfo.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes),16));
+        ChordInfo.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes, Peer.port),16));
 
         System.out.println("Peer hash = " + peerHash + "\n");
 
@@ -52,7 +52,7 @@ public class ChordInfo implements Runnable{
         }
         printFingerTable();
     }
-    
+
     private static void printFingerTable() {
         System.out.println("FingerTable");
 
@@ -67,7 +67,7 @@ public class ChordInfo implements Runnable{
      * @param hashSize hash size
      * @return hash
      */
-    private String getPeerHash(int hashSize)
+    public static String getPeerHash(int hashSize, int port)
     {
         String originalString;
         MessageDigest md = null;
@@ -80,7 +80,7 @@ public class ChordInfo implements Runnable{
             System.exit(1);
         }
 
-        originalString = "" + Peer.port;
+        originalString = "" + port;
 
         md.update(originalString.getBytes());
         byte[] hashBytes = md.digest();
