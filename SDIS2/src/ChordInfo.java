@@ -50,8 +50,10 @@ public class ChordInfo implements Runnable{
             Peer.executor.submit(new SuccessorRequest(Peer.connectionInfo.getPort(), Peer.port));
         }
 
-        for(int i = 0; i < mBytes; i++)
-            fingerTable.add(new ConnectionInfo(peerHash,"localhost",Peer.port));
+        for(int i = 0; i < mBytes * 8; i++) {
+            String hash = calculateNextKey(peerHash, i, mBytes * 8);
+            fingerTable.add(new ConnectionInfo(new BigInteger(hash), InetAddress.getLocalHost().getHostAddress(), Peer.port));
+        }
 
         printFingerTable();
 
@@ -179,7 +181,6 @@ public class ChordInfo implements Runnable{
 
     public static String searchSuccessor2(ConnectionInfo senderInfo)
     {
-        String message;
         String parameters[];
 
         BigInteger hashedKey = fingerTable.get(0).getHashedKey();
@@ -193,7 +194,8 @@ public class ChordInfo implements Runnable{
             for(int i = fingerTable.size()-1; i >= 0; i--){
                 if(fingerTable.get(i).getHashedKey().compareTo(peerHash) == 1)
                     if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) == -1) {
-                        parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
+                        parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort()),
+                                fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
                         return Auxiliary.addHeader("LOOKUP", parameters);
                     }
             }
