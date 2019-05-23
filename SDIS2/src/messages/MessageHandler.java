@@ -46,6 +46,7 @@ public class MessageHandler {
 
                 ChordInfo.getFingerTable().set(index,new ConnectionInfo(new BigInteger(tokens[2]), tokens[3], Integer.parseInt(tokens[4])));
                 MessageForwarder.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[3], Integer.parseInt(tokens[4]));
+     
                 break;
 
             case "PREDECESSOR":

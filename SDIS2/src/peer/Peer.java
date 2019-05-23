@@ -50,7 +50,7 @@ public class Peer implements RMIStub {
                     Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
 
         executor.scheduleAtFixedRate(checkPredecessor,0,1000, TimeUnit.MILLISECONDS);
-        executor.scheduleAtFixedRate(new Stabilize(),0,500, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(new Stabilize(),0,5000, TimeUnit.MILLISECONDS);
 
         RMIStub stub;
         Peer peer = new Peer();

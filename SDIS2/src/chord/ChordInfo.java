@@ -64,12 +64,12 @@ public class ChordInfo implements Runnable{
     }
 
     private void initFingerTable() throws UnknownHostException {
-        for(int i = 0 ; i < mBytes * 8;  i++) {
+      
             fingerTable.add(new ConnectionInfo(peerHash,InetAddress.getLocalHost().getHostAddress(), Peer.port ));
-        }
+
     }
 
-    private static void printFingerTable() {
+    public static void printFingerTable() {
         System.out.println("FingerTable");
 
         for(ConnectionInfo finger : fingerTable){

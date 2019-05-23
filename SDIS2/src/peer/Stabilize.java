@@ -8,6 +8,7 @@ import java.net.InetAddress;
 public class Stabilize implements Runnable {
     @Override
     public void run() {
+    	ChordInfo.printFingerTable();
             try {
                 if(ChordInfo.getFingerTable().get(0).getPort() == Peer.port  && ChordInfo.predecessor != null){
                     ChordInfo.getFingerTable().set(0, ChordInfo.predecessor);
