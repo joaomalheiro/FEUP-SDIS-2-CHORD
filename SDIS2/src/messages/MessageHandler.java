@@ -37,12 +37,15 @@ public class MessageHandler {
             case "SUCCESSOR":
                 int index;
 
-                for(index = 0; index < ChordInfo.getM() * 8; index++)
-                {
-                    String res = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, ChordInfo.getM() * 8);
-                    if(res.equals(tokens[1]))
-                        break;
-                }
+                if(tokens[1].equals(ChordInfo.peerHash.toString()))
+                    index = 0;
+                else
+                    for(index = 0; index < ChordInfo.getM() * 8; index++)
+                    {
+                        String res = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, ChordInfo.getM() * 8);
+                        if(res.equals(tokens[1]))
+                            break;
+                    }
 
                 ChordInfo.getFingerTable().set(index,new ConnectionInfo(new BigInteger(tokens[2]), tokens[3], Integer.parseInt(tokens[4])));
                 MessageForwarder.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[3], Integer.parseInt(tokens[4]));

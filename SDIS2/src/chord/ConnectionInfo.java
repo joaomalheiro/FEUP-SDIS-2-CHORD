@@ -4,15 +4,17 @@ import java.math.BigInteger;
 
 public class ConnectionInfo {
 
-    private String ip;
-    private int port;
-    private BigInteger hashedKey;
+    private String ip = "";
+    private int port = 0;
+    private BigInteger hashedKey = null;
 
     public ConnectionInfo(BigInteger hashedKey, String ip, int port) {
         this.ip = ip;
         this.port = port;
         this.hashedKey = hashedKey;
     }
+
+    public ConnectionInfo() {}
 
     public String getIp() {
         return ip;

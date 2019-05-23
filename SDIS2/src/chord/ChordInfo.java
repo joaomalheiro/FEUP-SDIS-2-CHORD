@@ -64,9 +64,7 @@ public class ChordInfo implements Runnable{
     }
 
     private void initFingerTable() throws UnknownHostException {
-      
             fingerTable.add(new ConnectionInfo(peerHash,InetAddress.getLocalHost().getHostAddress(), Peer.port ));
-
     }
 
     public static void printFingerTable() {
@@ -178,9 +176,13 @@ public class ChordInfo implements Runnable{
                 parameters = new String[]{hashedKey.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
                 return MessageForwarder.addHeader("SUCCESSOR", parameters);
         }
-
         else {
+            System.out.println(fingerTable.size());
             for(int i = fingerTable.size()-1; i >= 0; i--){
+
+                if(fingerTable.get(i).getHashedKey() == null)
+                    continue;
+
                 if(fingerTable.get(i).getHashedKey().compareTo(peerHash) > 0)
                     if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) < 0) {
                         parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort()),

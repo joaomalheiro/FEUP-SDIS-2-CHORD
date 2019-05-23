@@ -24,6 +24,9 @@ public class FixFingers implements Runnable {
         String key = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, mBits);
         ArrayList<ConnectionInfo> fingerTable = ChordInfo.getFingerTable();
 
+        if(index > (fingerTable.size() - 1))
+            fingerTable.add(new ConnectionInfo());
+
         String res = ChordInfo.searchSuccessor2(new ConnectionInfo(new BigInteger(key), "localhost", Peer.port));
         String[] tokens = null;
 
