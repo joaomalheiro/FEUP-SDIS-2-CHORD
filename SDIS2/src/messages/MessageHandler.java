@@ -23,26 +23,34 @@ public class MessageHandler {
                 //sendMessage(response, "localhost", tokens[3]);
                 break;
             case "LOOKUP":
+
                 BigInteger keyHash = new BigInteger(tokens[1]);
                 ipAddress = tokens[2];
                 port = Integer.parseInt(tokens[3]);
 
                 if(ChordInfo.getFingerTable().get(0).getPort() == Peer.port){
-                    System.out.println("Size 0");
-                    MessageForwarder.sendMessage("SUCCESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ipAddress, port);
+                    MessageForwarder.sendMessage("SUCCESSOR " + tokens[1] + " " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ipAddress, port);
                     break;
                 }
                 ChordInfo.searchSuccessor(new ConnectionInfo(keyHash,ipAddress, port));
                 break;
             case "SUCCESSOR":
-                ChordInfo.getFingerTable().set(0,new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
-                MessageForwarder.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[2], Integer.parseInt(tokens[3]));
+                int index;
+
+                for(index = 0; index < ChordInfo.getM() * 8; index++)
+                {
+                    String res = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, ChordInfo.getM() * 8);
+                    if(res.equals(tokens[1]))
+                        break;
+                }
+
+                ChordInfo.getFingerTable().set(index,new ConnectionInfo(new BigInteger(tokens[2]), tokens[3], Integer.parseInt(tokens[4])));
+                MessageForwarder.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[3], Integer.parseInt(tokens[4]));
                 break;
 
             case "PREDECESSOR":
                 ChordInfo.peerHash = new BigInteger(tokens[1]);
                 ChordInfo.predecessor = new ConnectionInfo(ChordInfo.peerHash,tokens[2],Integer.parseInt(tokens[3]));
-                System.out.println(ChordInfo.predecessor.getHashedKey());
                 /* if(chord.ChordInfo.getFingerTable().size() == 0) {
                     chord.ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
                 }*/

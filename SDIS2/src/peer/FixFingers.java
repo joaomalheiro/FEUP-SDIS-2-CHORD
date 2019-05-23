@@ -26,18 +26,23 @@ public class FixFingers implements Runnable {
 
         String res = ChordInfo.searchSuccessor2(new ConnectionInfo(new BigInteger(key), "localhost", Peer.port));
         String[] tokens = null;
+
         if(res != null)
             tokens = res.split(" ");
 
+        System.out.println("Key = " + key);
+        System.out.println(res);
+
         if(tokens != null){
             if(tokens[0].equals("SUCCESSOR"))
-                fingerTable.set(index, new ConnectionInfo(new BigInteger(key), tokens[2], Integer.parseInt(tokens[3])));
+                fingerTable.set(index, new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
             else if (tokens[0].equals("LOOKUP"))
             {
                 StringBuilder msg = new StringBuilder();
-                for(int i = 0; i < 4; i++)
+                for(int i = 0; i < 4; i++) {
                     msg.append(tokens[i]);
-                    msg.append(" ");
+                    //msg.append(" ");
+                }
 
                 MessageForwarder.sendMessage(msg.toString(), tokens[4], Integer.parseInt(tokens[5]));
             }

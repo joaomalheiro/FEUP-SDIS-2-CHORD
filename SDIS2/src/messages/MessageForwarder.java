@@ -9,7 +9,6 @@ import java.net.InetAddress;
 public class MessageForwarder {
 
     public static void sendMessage(String message, String address, int port) {
-
         SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket clientSocket;
         try {
@@ -17,6 +16,7 @@ public class MessageForwarder {
             clientSocket.startHandshake();
 
             DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+
             outToServer.writeBytes(message + '\n');
 
         } catch (IOException e) {
