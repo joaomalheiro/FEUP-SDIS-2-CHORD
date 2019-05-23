@@ -2,6 +2,7 @@ package peer;
 
 import chord.ChordInfo;
 import chord.ConnectionInfo;
+import files.FileHandler;
 import messages.MessageForwarder;
 
 import java.io.*;
@@ -11,6 +12,7 @@ import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +37,17 @@ public class Peer implements RMIStub {
             return;
 
         initAtributes(args);
+
+        /*
+        try {
+            String content = FileHandler.readFromFile("./testFiles/test.txt");
+            FileHandler.writeFile("duriola.txt", content);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        */
 
         Thread th = new Thread(new PeerReceiver(port));
         th.start();
@@ -78,6 +91,13 @@ public class Peer implements RMIStub {
                 connectionInfo.setIp(args[3]);
                 connectionInfo.setPort(Integer.parseInt(args[4]));
             }
+
+        FileHandler.createDir("backup");
+        FileHandler.createDir("restored");
+    }
+
+    public static String getPeerAccessPoint() {
+        return peerAccessPoint;
     }
 
     @Override
