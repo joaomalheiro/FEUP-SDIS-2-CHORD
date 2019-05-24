@@ -44,12 +44,16 @@ public class FileHandler {
 
         return byteArray;
     }
+    public static boolean checkFileExists(String filename) {
+        Path path = Paths.get(filename);
 
+        return Files.exists(path);
+    }
     public static void writeFile(String filename, byte[] fileContent) throws IOException, ExecutionException, InterruptedException {
 
         Path path = Paths.get(filename);
 
-        if(!Files.exists(path))
+        if(!checkFileExists(filename))
             Files.createFile(path);
 
         AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);

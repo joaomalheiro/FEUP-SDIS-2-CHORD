@@ -5,15 +5,16 @@ import files.FileHandler;
 import peer.Peer;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.concurrent.ExecutionException;
 
 public class BackupMessage extends Message {
     private int repDegree;
-    private String hashFile;
+    private BigInteger hashFile;
     private ConnectionInfo ci;
     private byte[] body;
 
-    public BackupMessage(ConnectionInfo ci, String hashFile, int repDegree, byte[] body) {
+    public BackupMessage(ConnectionInfo ci, BigInteger hashFile, int repDegree, byte[] body) {
         this.ci = ci;
         this.hashFile = hashFile;
         this.repDegree = repDegree;
