@@ -33,7 +33,7 @@ public class Backup implements Runnable{
             BigInteger fileHash = FileHandler.encrypt(filename);
 
             //search sucessor
-            //MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port)), destInet, destPort);
+            //MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), fileHash, repDegree, content), destInet, destPort);
 
         } catch (IOException e) {
             e.printStackTrace();

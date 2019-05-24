@@ -1,10 +1,12 @@
 package messages;
 
+import java.math.BigInteger;
+
 public class BackupCompleteMessage extends Message {
     private int repDegree;
-    private String hashFile;
+    private BigInteger hashFile;
 
-    public BackupCompleteMessage(String hashFile, int repDegree) {
+    public BackupCompleteMessage(BigInteger hashFile, int repDegree) {
         this.hashFile = hashFile;
         this.repDegree = repDegree;
     }

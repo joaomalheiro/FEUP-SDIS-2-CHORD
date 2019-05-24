@@ -94,7 +94,7 @@ public class Peer implements RMIStub {
 
     @Override
     public void backupProtocol(String file, int replicationDeg) {
-        Backup backup = new Backup(file, 2);
+        Backup backup = new Backup(file, replicationDeg);
         backup.run();
     }
 
