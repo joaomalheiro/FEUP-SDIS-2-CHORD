@@ -17,10 +17,13 @@ public class LookupMessage extends Message {
 
     @Override
     public void handleMessage() throws UnknownHostException {
-        if(ChordInfo.getFingerTable().get(0).getPort() == Peer.port)
+        if(ChordInfo.getFingerTable().get(0).getPort() == Peer.port) {
             MessageForwarder.sendMessage(new SucessorMessage(ci.getHashedKey().toString(),new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(),Peer.port)), ci.getIp(), ci.getPort());
+        } else {
+            ChordInfo.searchSuccessor(ci);
+        }
 
-        ChordInfo.searchSuccessor(ci);
+
     }
 
     @Override

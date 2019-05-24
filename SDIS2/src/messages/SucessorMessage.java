@@ -22,22 +22,21 @@ public class SucessorMessage extends Message {
 
         int index;
 
-        if(receivedKey.equals(ChordInfo.peerHash.toString()))
+        if(receivedKey.equals(ChordInfo.peerHash.toString())) {
             index = 0;
-
-        else
+        } else {
             for(index = 0; index < ChordInfo.getM() * 8; index++)
             {
                 String res = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, ChordInfo.getM() * 8);
                 if(res.equals(ci.getHashedKey().toString()))
                     break;
             }
+        }
 
         ChordInfo.getFingerTable().set(index,ci);
 
         try {
             PredecessorMessage predecessorMessage = new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port));
-            System.out.println("IP = " + ci.getIp() + " Port = " + ci.getPort());
             MessageForwarder.sendMessage(predecessorMessage, ci.getIp(), ci.getPort());
         } catch (UnknownHostException e) {
             e.printStackTrace();
