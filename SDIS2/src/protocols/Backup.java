@@ -3,12 +3,14 @@ package protocols;
 import chord.ChordInfo;
 import chord.ConnectionInfo;
 import files.FileHandler;
+import messages.BackupMessage;
 import messages.MessageForwarder;
 import peer.Peer;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -28,12 +30,10 @@ public class Backup implements Runnable{
         try {
             byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
 
-            String crlf = " " + (char) 0xD + (char) 0xA + (char) 0xD + (char) 0xA;
-
             BigInteger fileHash = FileHandler.encrypt(filename);
 
-
-            FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "/backup/" + FileHandler.encrypt(filename), content);
+            //search sucessor
+            //MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port)), destInet, destPort);
 
         } catch (IOException e) {
             e.printStackTrace();
