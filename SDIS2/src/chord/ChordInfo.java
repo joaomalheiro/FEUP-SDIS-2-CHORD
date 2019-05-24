@@ -3,6 +3,7 @@ package chord;
 import messages.LookupMessage;
 import messages.MessageForwarder;
 import messages.SucessorMessage;
+import peer.FixFingers;
 import peer.Peer;
 
 import java.math.BigInteger;
@@ -137,30 +138,24 @@ public class ChordInfo implements Runnable{
 
         BigInteger successorKey = fingerTable.get(0).getHashedKey();
 
-        /*Se o node S que enviou a mensagem, e sendo N o node que a recebeu, se encontrar em [N,sucessor(N)]
-        então sucessor(S) = sucessor(N)*/
         if(numberInInterval(peerHash, successorKey, senderInfo.getHashedKey())) {
-                parameters = new String[]{senderInfo.getHashedKey().toString(), successorKey.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
-                message = MessageForwarder.addHeader("SUCCESSOR", parameters);
-                MessageForwarder.sendMessage(message, senderInfo.getIp(), senderInfo.getPort() );
+
+            SucessorMessage sucessorMessage = new SucessorMessage(successorKey.toString(),new ConnectionInfo(senderInfo.getHashedKey(), fingerTable.get(0).getIp(), fingerTable.get(0).getPort()));
+            MessageForwarder.sendMessage(sucessorMessage, senderInfo.getIp(), senderInfo.getPort());
         }
 
-        /*Se a condição anterior não acontecer, então vai-se procurar o predecessor com a chava mais alta,
-          mas que seja menor que a chave do node que enviou a mensagem*/
         else {
             for(int i = fingerTable.size()-1; i >= 0; i--){
 
                 if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
-                        parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
-                        message = MessageForwarder.addHeader("LOOKUP", parameters);
-                        MessageForwarder.sendMessage(message, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
+                        LookupMessage lookupMessage = new LookupMessage(new ConnectionInfo(senderInfo.getHashedKey(), senderInfo.getIp(), senderInfo.getPort()));
+                        MessageForwarder.sendMessage(lookupMessage, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
                 }
             }
 
             try {
-                parameters = new String[]{senderInfo.getHashedKey().toString(), ChordInfo.peerHash.toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
-                message = MessageForwarder.addHeader("SUCCESSOR", parameters);
-                MessageForwarder.sendMessage(message, senderInfo.getIp(), senderInfo.getPort());
+                SucessorMessage sucessorMessage = new SucessorMessage(senderInfo.getHashedKey().toString(), new ConnectionInfo(peerHash, InetAddress.getLocalHost().getHostAddress(),Peer.port));
+                MessageForwarder.sendMessage(sucessorMessage, senderInfo.getIp(), senderInfo.getPort());
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

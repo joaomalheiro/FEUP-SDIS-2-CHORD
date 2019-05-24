@@ -20,7 +20,7 @@ public class ResponsePredecessorMessage extends Message {
         if(ci.getHashedKey() == null){
             MessageForwarder.sendMessage(new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port)), ci.getIp(), ci.getPort());
         } else {
-            ChordInfo.getFingerTable().set(0, new ConnectionInfo(ci.getHashedKey(), ci.getIp(), ci.getPort()));
+            //ChordInfo.getFingerTable().set(0, new ConnectionInfo(ci.getHashedKey(), ci.getIp(), ci.getPort()));
         }
     }
 

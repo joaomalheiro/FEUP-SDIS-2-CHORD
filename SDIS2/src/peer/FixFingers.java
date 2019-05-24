@@ -2,6 +2,7 @@ package peer;
 
 import chord.ChordInfo;
 import chord.ConnectionInfo;
+import messages.LookupMessage;
 import messages.MessageForwarder;
 
 import java.math.BigInteger;
