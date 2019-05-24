@@ -1,6 +1,8 @@
 package chord;
 
+import messages.LookupMessage;
 import messages.MessageForwarder;
+import messages.SucessorMessage;
 import peer.FixFingers;
 import peer.Peer;
 import peer.SuccessorRequest;
@@ -144,9 +146,12 @@ public class ChordInfo implements Runnable{
         então sucessor(S) = sucessor(N)*/
         if(senderInfo.getHashedKey().compareTo(peerHash) > 0) {
             if (senderInfo.getHashedKey().compareTo(hashedKey) < 0) {
-                parameters = new String[]{ peerHash.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getIp())};
-                message = MessageForwarder.addHeader("SUCCESSOR", parameters);
-                MessageForwarder.sendMessage(message, senderInfo.getIp(), senderInfo.getPort() );
+
+                SucessorMessage sucessorMessage = new SucessorMessage(new ConnectionInfo(peerHash, fingerTable.get(0).getIp(), fingerTable.get(0).getPort()));
+                //parameters = new String[]{ peerHash.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
+                //message = MessageForwarder.addHeader("SUCCESSOR", parameters);
+
+                MessageForwarder.sendMessage(sucessorMessage, senderInfo.getIp(), senderInfo.getPort());
             }
         }
 
@@ -157,14 +162,13 @@ public class ChordInfo implements Runnable{
                 if(fingerTable.get(i).getHashedKey().compareTo(peerHash) > 0)
                     if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) < 0) {
                         parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
-                        message = MessageForwarder.addHeader("LOOKUP", parameters);
-                        MessageForwarder.sendMessage(message, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
+                        LookupMessage lookupMessage = new LookupMessage(new ConnectionInfo(senderInfo.getHashedKey(), senderInfo.getIp(),senderInfo.getPort()));
+                        MessageForwarder.sendMessage(lookupMessage, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
                     }
             }
 
-            parameters = new String[]{predecessor.toString(),senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
-            message = MessageForwarder.addHeader("SUCCESSOR", parameters);
-            MessageForwarder.sendMessage(message, fingerTable.get(fingerTable.size()-1).getIp(), fingerTable.get(fingerTable.size()-1).getPort());
+            SucessorMessage sucessorMessage = new SucessorMessage(new ConnectionInfo(new BigInteger(predecessor.toString()), senderInfo.getIp(), senderInfo.getPort()));
+            MessageForwarder.sendMessage(sucessorMessage, fingerTable.get(fingerTable.size()-1).getIp(), fingerTable.get(fingerTable.size()-1).getPort());
         }
     }
 

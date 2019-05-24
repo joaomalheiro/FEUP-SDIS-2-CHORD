@@ -10,7 +10,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 public class MessageHandler {
-
     public static void handleMessage(String message) throws UnknownHostException {
         String[] tokens = message.split(" ");
         String ipAddress;
@@ -33,10 +32,6 @@ public class MessageHandler {
                     break;
                 }
                 ChordInfo.searchSuccessor(new ConnectionInfo(keyHash,ipAddress, port));
-                break;
-            case "SUCCESSOR":
-                ChordInfo.getFingerTable().set(0,new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
-                MessageForwarder.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[2], Integer.parseInt(tokens[3]));
                 break;
 
             case "PREDECESSOR":

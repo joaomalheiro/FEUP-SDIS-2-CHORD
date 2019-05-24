@@ -1,13 +1,12 @@
 package peer;
 
+import messages.Message;
 import messages.MessageHandler;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.UnknownHostException;
 
 
@@ -53,7 +52,7 @@ public class PeerReceiver implements Runnable {
 
     @Override
     public void run() {
-        String clientSentence = null;
+        Object messageObject = null;
         SSLSocket connectionSocket = null;
 
         //Ciclo infinito para receber mensagens no serverSocket
@@ -63,28 +62,29 @@ public class PeerReceiver implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            BufferedReader inFromClient = null;
+
+            ObjectInputStream inFromClient = null;
+            try {
+                inFromClient = new ObjectInputStream(connectionSocket.getInputStream());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             if(connectionSocket != null){
-                try {
-                    inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 if(inFromClient != null) {
                     try {
-                        clientSentence = inFromClient.readLine();
+                        messageObject = inFromClient.readObject();
                     } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     }
 
-                    if (clientSentence != null) {
-                        System.out.println("Received: " + clientSentence);
-                        try {
-                            MessageHandler.handleMessage(clientSentence);
-                        } catch (UnknownHostException e) {
-                            e.printStackTrace();
+                    if (messageObject != null) {
+                        System.out.println("Received: " + messageObject);
+                        if(messageObject instanceof Message){
+                            Message message = (Message) messageObject;
+                            message.handleMessage();
                         }
                     }
                 }
