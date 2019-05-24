@@ -17,6 +17,6 @@ public class LookupMessage extends Message {
 
     @Override
     public void handleMessage() {
-
+        ChordInfo.searchSuccessor(ci);
     }
 }

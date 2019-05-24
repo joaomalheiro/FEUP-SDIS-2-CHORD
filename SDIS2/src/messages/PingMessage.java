@@ -1,18 +1,16 @@
 package messages;
 
-import chord.ChordInfo;
 import chord.ConnectionInfo;
 
-public class PredecessorMessage extends Message {
+public class PingMessage  extends  Message{
 
     private ConnectionInfo ci;
 
-    public PredecessorMessage(ConnectionInfo ci) {
+    public PingMessage(ConnectionInfo ci){
         this.ci = ci;
     }
-
     @Override
     public void handleMessage() {
-        ChordInfo.predecessor = ci;
+        MessageForwarder.sendMessage("PONG", ci.getIp(), ci.getPort());
     }
 }
