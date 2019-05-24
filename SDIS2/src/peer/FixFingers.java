@@ -55,18 +55,18 @@ public class FixFingers implements Runnable {
                 fingerTable.set(index, new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
             else if (tokens[0].equals("LOOKUP"))
             {
-                String msg;
-                String[] parameters;
-
                 try {
-                    parameters = new String[]{key, InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
-                    msg = MessageForwarder.addHeader("LOOKUP", parameters);
-                    MessageForwarder.sendMessage(msg, tokens[1], Integer.parseInt(tokens[2]));
+                    //parameters = new String[]{key, InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
+                    //msg = MessageForwarder.addHeader("LOOKUP", parameters);
+                    //MessageForwarder.sendMessage(msg, tokens[1], Integer.parseInt(tokens[2]));
+                    MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(new BigInteger(key), InetAddress.getLocalHost().getHostAddress(), Peer.port)),tokens[1], Integer.parseInt(tokens[2]));
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 }
             }
         }
+
+        ChordInfo.printFingerTable();
 
         Peer.executor.schedule(this, 1, TimeUnit.SECONDS);
     }
