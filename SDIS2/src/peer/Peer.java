@@ -4,6 +4,7 @@ import chord.ChordInfo;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import messages.MessageForwarder;
+import protocols.Backup;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -37,17 +38,6 @@ public class Peer implements RMIStub {
             return;
 
         initAtributes(args);
-
-        /*
-        try {
-            String content = FileHandler.readFromFile("./testFiles/test.txt");
-            FileHandler.writeFile("duriola.txt", content);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
 
         Thread th = new Thread(new PeerReceiver(port));
         th.start();
@@ -102,7 +92,8 @@ public class Peer implements RMIStub {
 
     @Override
     public void backupProtocol(String file, int replicationDeg) {
-
+        Backup backup = new Backup(file, 2);
+        backup.run();
     }
 
     @Override
