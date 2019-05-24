@@ -1,8 +1,9 @@
 package chord;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 
-public class ConnectionInfo {
+public class ConnectionInfo implements Serializable {
 
     private String ip;
     private int port;

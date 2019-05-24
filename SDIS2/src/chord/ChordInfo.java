@@ -3,9 +3,7 @@ package chord;
 import messages.LookupMessage;
 import messages.MessageForwarder;
 import messages.SucessorMessage;
-import peer.FixFingers;
 import peer.Peer;
-import peer.SuccessorRequest;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -47,11 +45,6 @@ public class ChordInfo implements Runnable{
         ChordInfo.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes, Peer.port),16));
 
         System.out.println("peer.Peer hash = " + peerHash + "\n");
-
-        //se não for o primeiro peer no sistema
-        if(Peer.connectionInfo.getPort() != 0) {
-            Peer.executor.submit(new SuccessorRequest(Peer.connectionInfo.getPort(), Peer.port));
-        }
 
         for(int i = 0; i < mBytes * 8; i++) {
             String hash = calculateNextKey(peerHash, i, mBytes * 8);

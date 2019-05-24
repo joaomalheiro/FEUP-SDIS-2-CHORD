@@ -1,7 +1,6 @@
 package peer;
 
 import messages.Message;
-import messages.MessageHandler;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;

@@ -27,4 +27,15 @@ public class SucessorMessage extends Message {
         }
 
     }
+
+    @Override
+    public String toString() {
+        String returnString = null;
+        try {
+            returnString =  "SUCCESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port;
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return returnString;
+    }
 }

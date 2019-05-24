@@ -3,6 +3,8 @@ package peer;
 import chord.ChordInfo;
 import chord.ConnectionInfo;
 import files.FileHandler;
+import messages.LookupMessage;
+import messages.Message;
 import messages.MessageForwarder;
 import protocols.Backup;
 
@@ -47,9 +49,9 @@ public class Peer implements RMIStub {
         ChordInfo ci = new ChordInfo();
         executor.submit(ci);
 
-        if(connectionInfo.getPort() != 0)
-            MessageForwarder.sendMessage("LOOKUP " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
-
+        if(connectionInfo.getPort() != 0) {
+            MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port)),Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
+        }
         executor.scheduleAtFixedRate(checkPredecessor,0,1000, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(new Stabilize(),0,500, TimeUnit.MILLISECONDS);
 

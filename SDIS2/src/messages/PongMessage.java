@@ -11,4 +11,9 @@ public class PongMessage extends Message {
             Peer.checkPredecessor.notify();
         }
     }
+
+    @Override
+    public String toString() {
+        return "PONG";
+    }
 }

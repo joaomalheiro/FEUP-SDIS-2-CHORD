@@ -9,8 +9,14 @@ public class PingMessage  extends  Message{
     public PingMessage(ConnectionInfo ci){
         this.ci = ci;
     }
+
     @Override
     public void handleMessage() {
-        MessageForwarder.sendMessage("PONG", ci.getIp(), ci.getPort());
+        MessageForwarder.sendMessage(new PongMessage(), ci.getIp(), ci.getPort());
+    }
+
+    @Override
+    public String toString() {
+        return "PING " + this.ci;
     }
 }

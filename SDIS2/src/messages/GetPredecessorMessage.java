@@ -17,9 +17,14 @@ public class GetPredecessorMessage extends Message {
     @Override
     public void handleMessage() throws UnknownHostException {
         if(ChordInfo.predecessor == null){
-            MessageForwarder.sendMessage("RESPONSE_PREDECESSOR " + "NULL" + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port , ci.getIp(), ci.getPort());
+            MessageForwarder.sendMessage(new ResponsePredecessorMessage(new ConnectionInfo(null, InetAddress.getLocalHost().getHostAddress(), Peer.port)), ci.getIp(), ci.getPort());
         } else {
-            MessageForwarder.sendMessage("RESPONSE_PREDECESSOR " + ChordInfo.getPredecessor() + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port , ci.getIp() , ci.getPort());
+            MessageForwarder.sendMessage(new ResponsePredecessorMessage(new ConnectionInfo(ChordInfo.getPredecessor().getHashedKey(),InetAddress.getLocalHost().getHostAddress(),Peer.port)), ci.getIp(), ci.getPort());
         }
+    }
+
+    @Override
+    public String toString() {
+        return "BACKUP " + this.ci;
     }
 }
