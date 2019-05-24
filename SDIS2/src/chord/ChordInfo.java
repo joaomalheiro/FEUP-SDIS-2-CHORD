@@ -43,28 +43,30 @@ public class ChordInfo implements Runnable{
     private void setChord() throws UnknownHostException {
 
         ChordInfo.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes, Peer.port),16));
-
         System.out.println("peer.Peer hash = " + peerHash + "\n");
 
-        for(int i = 0; i < mBytes * 8; i++) {
+        //se não for o primeiro peer no sistema
+        if(Peer.connectionInfo.getPort() != 0) {
+           // Peer.executor.submit(new SuccessorRequest(Peer.connectionInfo.getPort(), Peer.port));
+        }
+
+        /*for(int i = 0; i < mBytes * 8; i++) {
             String hash = calculateNextKey(peerHash, i, mBytes * 8);
             fingerTable.add(new ConnectionInfo(new BigInteger(hash), InetAddress.getLocalHost().getHostAddress(), Peer.port));
-        }
+        }*/
 
         initFingerTable();
         printFingerTable();
 
-        //FixFingers ci = new FixFingers();
-        //Peer.executor.submit(ci);
+        FixFingers ff = new FixFingers();
+        Peer.executor.submit(ff);
     }
 
     private void initFingerTable() throws UnknownHostException {
-        for(int i = 0 ; i < mBytes * 8;  i++) {
             fingerTable.add(new ConnectionInfo(peerHash,InetAddress.getLocalHost().getHostAddress(), Peer.port ));
-        }
     }
 
-    private static void printFingerTable() {
+    public static void printFingerTable() {
         System.out.println("FingerTable");
 
         for(ConnectionInfo finger : fingerTable){
@@ -133,35 +135,35 @@ public class ChordInfo implements Runnable{
         String message;
         String parameters[];
 
-        BigInteger hashedKey = fingerTable.get(0).getHashedKey();
+        BigInteger successorKey = fingerTable.get(0).getHashedKey();
 
         /*Se o node S que enviou a mensagem, e sendo N o node que a recebeu, se encontrar em [N,sucessor(N)]
         então sucessor(S) = sucessor(N)*/
-        if(senderInfo.getHashedKey().compareTo(peerHash) > 0) {
-            if (senderInfo.getHashedKey().compareTo(hashedKey) < 0) {
-
-                SucessorMessage sucessorMessage = new SucessorMessage(new ConnectionInfo(peerHash, fingerTable.get(0).getIp(), fingerTable.get(0).getPort()));
-                //parameters = new String[]{ peerHash.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
-                //message = MessageForwarder.addHeader("SUCCESSOR", parameters);
-
-                MessageForwarder.sendMessage(sucessorMessage, senderInfo.getIp(), senderInfo.getPort());
-            }
+        if(numberInInterval(peerHash, successorKey, senderInfo.getHashedKey())) {
+                parameters = new String[]{senderInfo.getHashedKey().toString(), successorKey.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
+                message = MessageForwarder.addHeader("SUCCESSOR", parameters);
+                MessageForwarder.sendMessage(message, senderInfo.getIp(), senderInfo.getPort() );
         }
 
         /*Se a condição anterior não acontecer, então vai-se procurar o predecessor com a chava mais alta,
           mas que seja menor que a chave do node que enviou a mensagem*/
         else {
             for(int i = fingerTable.size()-1; i >= 0; i--){
-                if(fingerTable.get(i).getHashedKey().compareTo(peerHash) > 0)
-                    if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) < 0) {
+
+                if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
                         parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort())};
-                        LookupMessage lookupMessage = new LookupMessage(new ConnectionInfo(senderInfo.getHashedKey(), senderInfo.getIp(),senderInfo.getPort()));
-                        MessageForwarder.sendMessage(lookupMessage, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
-                    }
+                        message = MessageForwarder.addHeader("LOOKUP", parameters);
+                        MessageForwarder.sendMessage(message, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
+                }
             }
 
-            SucessorMessage sucessorMessage = new SucessorMessage(new ConnectionInfo(new BigInteger(predecessor.toString()), senderInfo.getIp(), senderInfo.getPort()));
-            MessageForwarder.sendMessage(sucessorMessage, fingerTable.get(fingerTable.size()-1).getIp(), fingerTable.get(fingerTable.size()-1).getPort());
+            try {
+                parameters = new String[]{senderInfo.getHashedKey().toString(), ChordInfo.peerHash.toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
+                message = MessageForwarder.addHeader("SUCCESSOR", parameters);
+                MessageForwarder.sendMessage(message, senderInfo.getIp(), senderInfo.getPort());
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -169,34 +171,64 @@ public class ChordInfo implements Runnable{
     {
         String parameters[];
 
-        BigInteger hashedKey = fingerTable.get(0).getHashedKey();
+        BigInteger successorKey = fingerTable.get(0).getHashedKey();
 
-        if(senderInfo.getHashedKey().compareTo(peerHash) > 0 && senderInfo.getHashedKey().compareTo(hashedKey) < 0) {
-                parameters = new String[]{senderInfo.getHashedKey().toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
-                return MessageForwarder.addHeader("SUCCESSOR", parameters);
+        System.out.println(senderInfo.getHashedKey() + " [ " + peerHash + ", " + successorKey + " ]");
+        if(numberInInterval(peerHash, successorKey, senderInfo.getHashedKey())) {
+            parameters = new String[]{successorKey.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
+            System.out.println("Sucessor");
+            return MessageForwarder.addHeader("SUCCESSOR", parameters);
         }
 
         else {
             for(int i = fingerTable.size()-1; i >= 0; i--){
-                if(fingerTable.get(i).getHashedKey().compareTo(peerHash) > 0)
-                    if (fingerTable.get(i).getHashedKey().compareTo(senderInfo.getHashedKey()) < 0) {
-                        parameters = new String[]{senderInfo.getHashedKey().toString(), senderInfo.getIp(), String.valueOf(senderInfo.getPort()),
-                                fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
-                        return MessageForwarder.addHeader("LOOKUP", parameters);
-                    }
+
+                if(fingerTable.get(i).getHashedKey() == null)
+                    continue;
+
+                if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
+                    parameters = new String[]{fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
+                    return MessageForwarder.addHeader("LOOKUP", parameters);
+                }
             }
 
+            System.out.println("Proprio");
+
             try {
-                parameters = new String[]{senderInfo.getHashedKey().toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
+                parameters = new String[]{ChordInfo.peerHash.toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
                 return MessageForwarder.addHeader("SUCCESSOR", parameters);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
-
         }
 
-        return null;
+        return "";
     }
+
+
+    private static boolean numberInInterval(BigInteger begin, BigInteger end, BigInteger value)
+    {
+        boolean result = false;
+        int cmp = begin.compareTo(end);
+
+        if(cmp == 1) {
+            if (value.compareTo(begin) == 1 || value.compareTo(end) == -1)
+                result = true;
+        }
+
+        else if (cmp == -1) {
+            if (value.compareTo(begin) == 1 && value.compareTo(end) == -1)
+                result = true;
+        }
+
+        else {
+            if (value.compareTo(begin) == 0)
+                result = true;
+        }
+
+        return result;
+    }
+
     /*
     public static void setSuccessor(String key)
     {

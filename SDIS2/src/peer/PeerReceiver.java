@@ -56,6 +56,7 @@ public class PeerReceiver implements Runnable {
 
         //Ciclo infinito para receber mensagens no serverSocket
         while(true) {
+
             try {
                 connectionSocket = (SSLSocket) serverSocket.accept();
             } catch (IOException e) {
@@ -92,6 +93,7 @@ public class PeerReceiver implements Runnable {
                     }
                 }
             }
+
         }
     }
 }
