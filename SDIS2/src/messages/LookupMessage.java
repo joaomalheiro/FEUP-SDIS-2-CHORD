@@ -16,7 +16,10 @@ public class LookupMessage extends Message {
     }
 
     @Override
-    public void handleMessage() {
+    public void handleMessage() throws UnknownHostException {
+        if(ChordInfo.getFingerTable().get(0).getIp() == InetAddress.getLocalHost().toString() && ChordInfo.getFingerTable().get(0).getPort() == Peer.port){
+            MessageForwarder.sendMessage("SUCCESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, ci.getIp(), ci.getPort());
+        }
         ChordInfo.searchSuccessor(ci);
     }
 }

@@ -84,7 +84,11 @@ public class PeerReceiver implements Runnable {
                         System.out.println("Received: " + messageObject);
                         if(messageObject instanceof Message){
                             Message message = (Message) messageObject;
-                            message.handleMessage();
+                            try {
+                                message.handleMessage();
+                            } catch (UnknownHostException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
