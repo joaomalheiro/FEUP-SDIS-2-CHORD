@@ -20,15 +20,17 @@ public class FixFingers implements Runnable {
 
         index++;
 
-        if(index == mBits)
+        if(index == mBits) {
             index = 0;
+            ChordInfo.printFingerTable();
+        }
 
         String key = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, mBits);
         ArrayList<ConnectionInfo> fingerTable = ChordInfo.getFingerTable();
 
         if(index > (fingerTable.size() - 1)) {
             try {
-                fingerTable.add(new ConnectionInfo(new BigInteger(key), InetAddress.getLocalHost().getHostAddress(), Peer.port));
+                fingerTable.add(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -53,15 +55,16 @@ public class FixFingers implements Runnable {
                 fingerTable.set(index, new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
             else if (tokens[0].equals("LOOKUP"))
             {
-                StringBuilder msg = new StringBuilder();
-                for(int i = 0; i < 4; i++) {
-                    msg.append(tokens[i]);
-                    msg.append(" ");
+                String msg;
+                String[] parameters;
+
+                try {
+                    parameters = new String[]{key, InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
+                    msg = MessageForwarder.addHeader("LOOKUP", parameters);
+                    MessageForwarder.sendMessage(msg, tokens[1], Integer.parseInt(tokens[2]));
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
                 }
-
-                System.out.println(tokens[4]);
-
-                MessageForwarder.sendMessage(msg.toString(), tokens[4], Integer.parseInt(tokens[5]));
             }
         }
 

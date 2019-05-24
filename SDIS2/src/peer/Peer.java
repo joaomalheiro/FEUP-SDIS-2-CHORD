@@ -49,7 +49,7 @@ public class Peer implements RMIStub {
                     + InetAddress.getLocalHost().getHostAddress() + " " +
                     Peer.port, Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
 
-        executor.scheduleAtFixedRate(checkPredecessor,0,1000, TimeUnit.MILLISECONDS);
+        //executor.scheduleAtFixedRate(checkPredecessor,0,1000, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(new Stabilize(),0,5000, TimeUnit.MILLISECONDS);
 
         RMIStub stub;

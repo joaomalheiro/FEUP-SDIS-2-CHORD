@@ -39,6 +39,7 @@ public class MessageHandler {
 
                 if(tokens[1].equals(ChordInfo.peerHash.toString()))
                     index = 0;
+
                 else
                     for(index = 0; index < ChordInfo.getM() * 8; index++)
                     {
@@ -78,7 +79,7 @@ public class MessageHandler {
                 if(tokens[1].equals("NULL")){
                     MessageForwarder.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[2], Integer.parseInt(tokens[3]));
                 } else {
-                    ChordInfo.getFingerTable().set(0, new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
+                    //ChordInfo.getFingerTable().set(0, new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
                 }
                 break;
 
