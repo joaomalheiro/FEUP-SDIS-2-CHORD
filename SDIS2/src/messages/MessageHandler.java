@@ -49,12 +49,11 @@ public class MessageHandler {
 
                 ChordInfo.getFingerTable().set(index,new ConnectionInfo(new BigInteger(tokens[2]), tokens[3], Integer.parseInt(tokens[4])));
                 MessageForwarder.sendMessage("PREDECESSOR " + ChordInfo.peerHash + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port, tokens[3], Integer.parseInt(tokens[4]));
-     
+                ChordInfo.printFingerTable();
                 break;
 
             case "PREDECESSOR":
-                ChordInfo.peerHash = new BigInteger(tokens[1]);
-                ChordInfo.predecessor = new ConnectionInfo(ChordInfo.peerHash,tokens[2],Integer.parseInt(tokens[3]));
+                ChordInfo.predecessor = new ConnectionInfo(new BigInteger(tokens[1]),tokens[2],Integer.parseInt(tokens[3]));
                 /* if(chord.ChordInfo.getFingerTable().size() == 0) {
                     chord.ChordInfo.addEntry(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3]));
                 }*/
