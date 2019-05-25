@@ -9,12 +9,12 @@ import java.net.InetAddress;
 
 public class MessageForwarder {
 
-    public synchronized static void sendMessage(Message message, String address, int port){
-        System.out.println("Sending " + message + " to :  " + address + port);
+    public synchronized static void sendMessage(Message message){
+        System.out.println("Sending " + message + " to :  " + message.getIpAddress() + message.getPort());
         SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket clientSocket;
         try {
-            clientSocket = (SSLSocket) socketFactory.createSocket(InetAddress.getByName(address), port);
+            clientSocket = (SSLSocket) socketFactory.createSocket(InetAddress.getByName(message.getIpAddress()), message.getPort());
             clientSocket.startHandshake();
 
             ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());

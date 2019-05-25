@@ -10,9 +10,13 @@ import java.net.UnknownHostException;
 public class PredecessorMessage extends Message {
 
     private ConnectionInfo ci;
+    private String ipAddress;
+    private int port;
 
-    public PredecessorMessage(ConnectionInfo ci) {
+    public PredecessorMessage(ConnectionInfo ci,String ipAddress,int port) {
         this.ci = ci;
+        this.ipAddress = ipAddress;
+        this.port = port;
     }
 
     @Override
@@ -29,5 +33,14 @@ public class PredecessorMessage extends Message {
             e.printStackTrace();
         }
         return returnString;
+    }
+    @Override
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
+    @Override
+    public int getPort() {
+        return this.port;
     }
 }

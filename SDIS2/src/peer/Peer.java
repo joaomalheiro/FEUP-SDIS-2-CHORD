@@ -50,7 +50,7 @@ public class Peer implements RMIStub {
         executor.submit(ci);
 
         if(connectionInfo.getPort() != 0) {
-            MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port)),Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort());
+            MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort()));
         }
         executor.scheduleAtFixedRate(checkPredecessor,0,1000, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(new Stabilize(),0,500, TimeUnit.MILLISECONDS);

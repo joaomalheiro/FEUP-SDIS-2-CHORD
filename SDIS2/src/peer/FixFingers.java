@@ -3,7 +3,9 @@ package peer;
 import chord.ChordInfo;
 import chord.ConnectionInfo;
 import messages.LookupMessage;
+import messages.Message;
 import messages.MessageForwarder;
+import messages.SucessorMessage;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -37,33 +39,25 @@ public class FixFingers implements Runnable {
             }
         }
 
-        String res = null;
+        Message res = null;
         try {
             res = ChordInfo.searchSuccessor2(new ConnectionInfo(new BigInteger(key), InetAddress.getLocalHost().getHostAddress(), Peer.port));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        String[] tokens = null;
-
-        if(res != null)
-            tokens = res.split(" ");
 
         System.out.println("Key = " + key);
         System.out.println(res);
 
-        if(tokens != null){
-            if(tokens[0].equals("SUCCESSOR"))
-                fingerTable.set(index, new ConnectionInfo(new BigInteger(tokens[1]), tokens[2], Integer.parseInt(tokens[3])));
-            else if (tokens[0].equals("LOOKUP"))
+        if(res != null){
+            if(res instanceof SucessorMessage)
+                fingerTable.set(index, ((SucessorMessage) res).getCi());
+            else if (res instanceof LookupMessage)
             {
-                try {
-                    //parameters = new String[]{key, InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
-                    //msg = MessageForwarder.addHeader("LOOKUP", parameters);
-                    //MessageForwarder.sendMessage(msg, tokens[1], Integer.parseInt(tokens[2]));
-                    MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(new BigInteger(key), InetAddress.getLocalHost().getHostAddress(), Peer.port)),tokens[1], Integer.parseInt(tokens[2]));
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
+                //parameters = new String[]{key, InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
+                //msg = MessageForwarder.addHeader("LOOKUP", parameters);
+                //MessageForwarder.sendMessage(msg, tokens[1], Integer.parseInt(tokens[2]));
+                MessageForwarder.sendMessage(res);
             }
         }
 

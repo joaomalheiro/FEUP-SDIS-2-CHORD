@@ -1,6 +1,7 @@
 package chord;
 
 import messages.LookupMessage;
+import messages.Message;
 import messages.MessageForwarder;
 import messages.SucessorMessage;
 import peer.FixFingers;
@@ -133,7 +134,7 @@ public class ChordInfo implements Runnable{
 
 
     //NOT TESTED !!
-    public static void searchSuccessor(ConnectionInfo senderInfo)
+   /* public static void searchSuccessor(ConnectionInfo senderInfo)
     {
         String message;
         String parameters[];
@@ -162,9 +163,9 @@ public class ChordInfo implements Runnable{
                 e.printStackTrace();
             }
         }
-    }
+    }*/
 
-    public static String searchSuccessor2(ConnectionInfo senderInfo)
+    public static Message searchSuccessor2(ConnectionInfo senderInfo)
     {
         String parameters[];
 
@@ -174,7 +175,7 @@ public class ChordInfo implements Runnable{
         if(numberInInterval(peerHash, successorKey, senderInfo.getHashedKey())) {
             parameters = new String[]{successorKey.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
             System.out.println("Sucessor");
-            return MessageForwarder.addHeader("SUCCESSOR", parameters);
+            return new SucessorMessage(senderInfo.getHashedKey().toString(),new ConnectionInfo(fingerTable.get(0).getHashedKey(),fingerTable.get(0).getIp(),fingerTable.get(0).getPort()),senderInfo.getIp(),senderInfo.getPort());
         }
 
         else {
@@ -185,7 +186,7 @@ public class ChordInfo implements Runnable{
 
                 if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
                     parameters = new String[]{fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
-                    return MessageForwarder.addHeader("LOOKUP", parameters);
+                    return new LookupMessage(senderInfo,fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
                 }
             }
 
@@ -193,13 +194,13 @@ public class ChordInfo implements Runnable{
 
             try {
                 parameters = new String[]{ChordInfo.peerHash.toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
-                return MessageForwarder.addHeader("SUCCESSOR", parameters);
+                return new SucessorMessage(senderInfo.getHashedKey().toString(),new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),senderInfo.getIp(),senderInfo.getPort());
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
         }
 
-        return "";
+        return null;
     }
 
     private static boolean numberInInterval(BigInteger begin, BigInteger end, BigInteger value)

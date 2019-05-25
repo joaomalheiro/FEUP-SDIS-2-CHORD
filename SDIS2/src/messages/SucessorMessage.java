@@ -11,10 +11,14 @@ public class SucessorMessage extends Message {
 
     private String receivedKey;
     private ConnectionInfo ci;
+    private String ipAddress;
+    private int port;
 
-    public SucessorMessage(String receivedKey, ConnectionInfo ci) {
+    public SucessorMessage(String receivedKey, ConnectionInfo ci,String ipAddress,int port) {
         this.receivedKey = receivedKey;
         this.ci = ci;
+        this.ipAddress = ipAddress;
+        this.port = port;
     }
 
     @Override
@@ -36,8 +40,8 @@ public class SucessorMessage extends Message {
         ChordInfo.getFingerTable().set(index,ci);
 
         try {
-            PredecessorMessage predecessorMessage = new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port));
-            MessageForwarder.sendMessage(predecessorMessage, ci.getIp(), ci.getPort());
+            PredecessorMessage predecessorMessage = new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),ci.getIp(), ci.getPort());
+            MessageForwarder.sendMessage(predecessorMessage);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -49,5 +53,18 @@ public class SucessorMessage extends Message {
         String returnString =  "SUCCESSOR " + receivedKey + " " + ci.getHashedKey().toString() + " " + ci.getIp() + " " + ci.getPort();
 
         return returnString;
+    }
+    @Override
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
+    @Override
+    public int getPort() {
+        return this.port;
+    }
+
+    public ConnectionInfo getCi() {
+        return ci;
     }
 }

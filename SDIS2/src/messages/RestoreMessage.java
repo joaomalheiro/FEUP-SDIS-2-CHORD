@@ -12,11 +12,15 @@ public class RestoreMessage extends Message {
     private ConnectionInfo ci;
     private BigInteger hashFile;
     private String filename;
+    private String ipAddress;
+    private int port;
 
-    public RestoreMessage(ConnectionInfo ci, BigInteger hashFile, String filename) {
+    public RestoreMessage(ConnectionInfo ci, BigInteger hashFile, String filename,String ipAddress,int port) {
         this.ci = ci;
         this.hashFile = hashFile;
         this.filename = filename;
+        this.ipAddress = ipAddress;
+        this.port = port;
     }
 
     @Override
@@ -44,5 +48,14 @@ public class RestoreMessage extends Message {
         }
         //MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile), ci.getIp(), ci.getPort());
 
+    }
+    @Override
+    public String getIpAddress() {
+        return this.ipAddress;
+    }
+
+    @Override
+    public int getPort() {
+        return this.port;
     }
 }

@@ -21,7 +21,7 @@ public class CheckPredecessor implements Runnable{
         synchronized(this){
             if (ChordInfo.predecessor != null) {
                 try {
-                    MessageForwarder.sendMessage(new PingMessage(new ConnectionInfo(null, InetAddress.getLocalHost().getHostAddress(), Peer.port)),ChordInfo.predecessor.getIp(), ChordInfo.predecessor.getPort());
+                    MessageForwarder.sendMessage(new PingMessage(new ConnectionInfo(null, InetAddress.getLocalHost().getHostAddress(), Peer.port),ChordInfo.predecessor.getIp(), ChordInfo.predecessor.getPort()));
                     this.wait(timeout);
                 } catch (Exception e) {
                     e.printStackTrace();
