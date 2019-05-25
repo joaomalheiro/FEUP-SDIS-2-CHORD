@@ -25,6 +25,6 @@ public class GetPredecessorMessage extends Message {
 
     @Override
     public String toString() {
-        return "BACKUP " + this.ci;
+        return "GET_PREDECESSOR " + this.ci.getIp() + " " + this.ci.getPort();
     }
 }

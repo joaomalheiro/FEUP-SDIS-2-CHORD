@@ -33,7 +33,10 @@ public class ConnectionInfo implements Serializable {
 
     @Override
     public String toString() {
+        if(this.getHashedKey() != null)
         return this.hashedKey + " " + this.ip + " " + this.port;
+        else
+            return this.ip + " " + this.port;
     }
 
     @Override

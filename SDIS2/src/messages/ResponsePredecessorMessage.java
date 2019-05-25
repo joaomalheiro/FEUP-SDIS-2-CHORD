@@ -18,20 +18,18 @@ public class ResponsePredecessorMessage extends Message {
     @Override
     public void handleMessage() throws UnknownHostException {
         if(ci.getHashedKey() == null){
+            System.out.println("RECEIVED NULL");
             MessageForwarder.sendMessage(new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port)), ci.getIp(), ci.getPort());
-        } else {
-            //ChordInfo.getFingerTable().set(0, new ConnectionInfo(ci.getHashedKey(), ci.getIp(), ci.getPort()));
+        } else if(ci.getHashedKey().compareTo(ChordInfo.peerHash) != 0){
+            System.out.println("RECEIVED " + ci);
+            ChordInfo.getFingerTable().set(0, new ConnectionInfo(ci.getHashedKey(), ci.getIp(), ci.getPort()));
         }
     }
 
     @Override
     public String toString() {
-        String returnString = null;
-        try {
-            returnString = "RESPONSE_PREDECESSOR " + ChordInfo.getPredecessor() + " " + InetAddress.getLocalHost().getHostAddress() + " " + Peer.port;
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        String returnString;
+        returnString = "RESPONSE_PREDECESSOR " + ci.getHashedKey() + " " + ci.getIp() + " " + ci.getPort();
         return returnString;
     }
 }
