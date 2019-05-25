@@ -63,6 +63,6 @@ public class FixFingers implements Runnable {
 
         ChordInfo.printFingerTable();
 
-        Peer.executor.schedule(this, 1, TimeUnit.SECONDS);
+        Peer.executor.schedule(this, 2, TimeUnit.SECONDS);
     }
 }
