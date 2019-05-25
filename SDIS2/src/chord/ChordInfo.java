@@ -200,7 +200,6 @@ public class ChordInfo implements Runnable{
         return "";
     }
 
-
     private static boolean numberInInterval(BigInteger begin, BigInteger end, BigInteger value)
     {
         boolean result = false;

@@ -27,22 +27,6 @@ public class Backup implements Runnable{
 
     @Override
     public void run() {
-        try {
-            byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
 
-            BigInteger fileHash = FileHandler.encrypt(filename);
-
-            //search sucessor
-            //MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), fileHash, repDegree, content), destInet, destPort);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
     }
 }

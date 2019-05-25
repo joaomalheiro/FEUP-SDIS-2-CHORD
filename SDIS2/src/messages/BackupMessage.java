@@ -38,6 +38,7 @@ public class BackupMessage extends Message {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        
         MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile,this.repDegree), ci.getIp(), ci.getPort());
 
     }
