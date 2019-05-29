@@ -1,5 +1,6 @@
 package messages;
 
+import peer.MessageHandler;
 import peer.Peer;
 
 import javax.net.ssl.SSLSocket;
@@ -11,23 +12,13 @@ import java.net.InetAddress;
 
 public class MessageForwarder {
 
-    public synchronized static void sendMessage(Message message){
-        System.out.println("Sending " + message + " to :  " + message.getIpAddress() + message.getPort());
+    public static void sendMessage(Message message){
+        System.out.println("beggining of send message");
 
-        if(message.getPort() == Peer.port)
-            return;
-
-        SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-        SSLSocket clientSocket;
-        try {
-            clientSocket = (SSLSocket) socketFactory.createSocket(InetAddress.getByName(message.getIpAddress()), message.getPort());
-            clientSocket.startHandshake();
-
-            ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
-            outToServer.writeObject(message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Thread th = new Thread(new SendMessage(message));
+        th.start();
+        //SendMessage sm = new SendMessage(message);
+        //Peer.executor.submit(sm);
     }
 
     public static String addHeader(String type, String[] params) {

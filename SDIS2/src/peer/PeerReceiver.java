@@ -7,6 +7,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.*;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
 
 
 public class PeerReceiver implements Runnable {
@@ -80,17 +81,8 @@ public class PeerReceiver implements Runnable {
                         e.printStackTrace();
                     }
 
-                    if (messageObject != null) {
-                        System.out.println("Received: " + messageObject);
-                        if(messageObject instanceof Message){
-                            Message message = (Message) messageObject;
-                            try {
-                                message.handleMessage();
-                            } catch (UnknownHostException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
+                    MessageHandler mh = new MessageHandler(messageObject);
+                    Peer.executor.submit(mh);
                 }
             }
 

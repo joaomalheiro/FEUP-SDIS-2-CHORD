@@ -62,7 +62,7 @@ public class ChordInfo implements Runnable{
         printFingerTable();
 
         FixFingers ff = new FixFingers();
-        Peer.executor.scheduleAtFixedRate(ff,0,2000, TimeUnit.MILLISECONDS);
+        Peer.executor.scheduleAtFixedRate(ff,0,5000, TimeUnit.MILLISECONDS);
     }
 
     private void initFingerTable() throws UnknownHostException {
@@ -188,7 +188,7 @@ public class ChordInfo implements Runnable{
                 if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
                     if(fingerTable.get(i).getHashedKey().equals(ChordInfo.peerHash))
                         continue;
-
+                    System.out.println("Index = " + i + " Node = " + fingerTable.get(i));
                     parameters = new String[]{fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
                     return new LookupMessage(senderInfo,fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
                 }

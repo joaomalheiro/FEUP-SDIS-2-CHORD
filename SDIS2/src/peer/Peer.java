@@ -45,7 +45,7 @@ public class Peer implements RMIStub {
         th.start();
 
         executor = Executors.newScheduledThreadPool(100);
-        
+
         ChordInfo ci = new ChordInfo();
         executor.submit(ci);
 
