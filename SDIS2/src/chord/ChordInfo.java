@@ -62,7 +62,7 @@ public class ChordInfo implements Runnable{
         printFingerTable();
 
         FixFingers ff = new FixFingers();
-        Peer.executor.scheduleAtFixedRate(ff,0,5000, TimeUnit.MILLISECONDS);
+        Peer.executor.scheduleAtFixedRate(ff,0,500, TimeUnit.MILLISECONDS);
     }
 
     private void initFingerTable() throws UnknownHostException {

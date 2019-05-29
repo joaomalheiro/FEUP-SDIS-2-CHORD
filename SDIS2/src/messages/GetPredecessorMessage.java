@@ -31,7 +31,7 @@ public class GetPredecessorMessage extends Message {
         if(ChordInfo.predecessor == null){
             MessageForwarder.sendMessage(new ResponsePredecessorMessage(new ConnectionInfo(null, InetAddress.getLocalHost().getHostAddress(), Peer.port), ci.getIp(), ci.getPort()));
         } else {
-            MessageForwarder.sendMessage(new ResponsePredecessorMessage(new ConnectionInfo(ChordInfo.getPredecessor().getHashedKey(),InetAddress.getLocalHost().getHostAddress(),Peer.port), ci.getIp(), ci.getPort()));
+            MessageForwarder.sendMessage(new ResponsePredecessorMessage(new ConnectionInfo(ChordInfo.getPredecessor().getHashedKey(),ChordInfo.getPredecessor().getIp(),ChordInfo.getPredecessor().getPort()), ci.getIp(), ci.getPort()));
         }
     }
 
