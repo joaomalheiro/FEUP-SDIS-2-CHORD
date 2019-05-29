@@ -23,11 +23,11 @@ public class ResponsePredecessorMessage extends Message {
     public void handleMessage() throws UnknownHostException {
         if(ci.getHashedKey() == null){
             System.out.println("RECEIVED NULL");
-            MessageForwarder.sendMessage(new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), ci.getIp(), ci.getPort()));
-        } else if(ci.getHashedKey().compareTo(ChordInfo.peerHash) != 0){
-            System.out.println("RECEIVED " + ci);
+        } else if(ChordInfo.numberInInterval(ChordInfo.peerHash,ChordInfo.getFingerTable().get(0).getHashedKey(),ci.getHashedKey())) {
             ChordInfo.getFingerTable().set(0, new ConnectionInfo(ci.getHashedKey(), ci.getIp(), ci.getPort()));
         }
+        MessageForwarder.sendMessage(new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), ci.getIp(), ci.getPort()));
+
     }
 
     @Override

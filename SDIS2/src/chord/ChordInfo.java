@@ -72,6 +72,7 @@ public class ChordInfo implements Runnable{
     }
 
     public static void printFingerTable() {
+        System.out.println("Predecessor: " + ChordInfo.predecessor);
         System.out.println("FingerTable");
 
         for(ConnectionInfo finger : fingerTable){
@@ -207,7 +208,7 @@ public class ChordInfo implements Runnable{
         return null;
     }
 
-    private static boolean numberInInterval(BigInteger begin, BigInteger end, BigInteger value)
+    public static boolean numberInInterval(BigInteger begin, BigInteger end, BigInteger value)
     {
         boolean result = false;
         int cmp = begin.compareTo(end);

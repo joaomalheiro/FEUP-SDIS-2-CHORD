@@ -21,6 +21,8 @@ public class PredecessorMessage extends Message {
 
     @Override
     public void handleMessage() {
+        if(ChordInfo.predecessor == null ||
+                ChordInfo.numberInInterval(ChordInfo.predecessor.getHashedKey(),ChordInfo.peerHash,ci.getHashedKey()))
         ChordInfo.predecessor = ci;
     }
 

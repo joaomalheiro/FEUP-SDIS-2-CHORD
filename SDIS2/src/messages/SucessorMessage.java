@@ -43,11 +43,11 @@ public class SucessorMessage extends Message {
             return;
 
         try {
-            System.out.println("Before creating");
+            //System.out.println("Before creating");
             PredecessorMessage predecessorMessage = new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),ci.getIp(), ci.getPort());
-            System.out.println("Before send");
+            //System.out.println("Before send");
             MessageForwarder.sendMessage(predecessorMessage);
-            System.out.println("After send");
+            //System.out.println("After send");
 
         } catch (UnknownHostException e) {
             e.printStackTrace();
