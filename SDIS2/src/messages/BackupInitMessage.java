@@ -40,7 +40,8 @@ public class BackupInitMessage extends Message {
 
        Message res = ChordInfo.searchSuccessor2(ci);
        if(res instanceof SucessorMessage) {
-           MessageForwarder.sendMessage(new BackupReadyMessage(((SucessorMessage) res).getCi(),this.hashFile,this.repDegree,this.filename,ci.getIp(),ci.getPort()));
+           System.out.println("res is sucessor, gonna send backup ready with " + res.getIpAddress() + " " + res.getPort());
+           MessageForwarder.sendMessage(new BackupReadyMessage(((SucessorMessage) res).getCi(),this.hashFile, this.repDegree, this.filename,ci.getIp(),ci.getPort()));
        } else if(res instanceof LookupMessage){
            MessageForwarder.sendMessage(new BackupInitMessage(ci,this.hashFile,this.repDegree,this.filename,res.getIpAddress(),res.getPort()));
        }

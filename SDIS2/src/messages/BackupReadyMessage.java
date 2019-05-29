@@ -8,6 +8,7 @@ import peer.Peer;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 
@@ -43,20 +44,34 @@ public class BackupReadyMessage extends Message {
 
     public void handleMessage() {
 
-        try {
-            byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
+            try {
 
-            BigInteger fileHash = FileHandler.encrypt(filename);
+                byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
 
-            MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), fileHash, repDegree, content, ci.getIp(), ci.getPort()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+                if((this.ci.getPort() == Peer.port) && (this.ci.getIp().equals(InetAddress.getLocalHost().getHostAddress()))) {
+
+                    try {
+                        FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "/backup/" + hashFile, content);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                BigInteger fileHash = FileHandler.encrypt(filename);
+
+                MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), fileHash, repDegree, content, ci.getIp(), ci.getPort()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
     }
 }

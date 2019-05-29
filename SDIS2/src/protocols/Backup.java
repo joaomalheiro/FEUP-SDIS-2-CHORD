@@ -3,14 +3,14 @@ package protocols;
 import chord.ChordInfo;
 import chord.ConnectionInfo;
 import files.FileHandler;
-import messages.BackupMessage;
-import messages.MessageForwarder;
+import messages.*;
 import peer.Peer;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -27,6 +27,39 @@ public class Backup implements Runnable{
 
     @Override
     public void run() {
+
+        BigInteger hashFile = null;
+        try {
+            hashFile = FileHandler.encrypt(filename);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        ConnectionInfo ci = null;
+        try {
+            ci = new ConnectionInfo(hashFile, InetAddress.getLocalHost().getHostAddress(), Peer.port);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+
+        Message res = ChordInfo.searchSuccessor2(ci);
+
+        if(res instanceof SucessorMessage) {
+            try {
+                byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
+
+                MessageForwarder.sendMessage(new BackupMessage(ci, hashFile, repDegree, content, res.getIpAddress(), res.getPort()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        } else if(res instanceof LookupMessage){
+            MessageForwarder.sendMessage(new BackupInitMessage(ci, hashFile, this.repDegree, this.filename, res.getIpAddress(), res.getPort()));
+        }
 
     }
 }
