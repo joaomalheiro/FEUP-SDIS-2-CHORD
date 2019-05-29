@@ -7,6 +7,7 @@ import messages.LookupMessage;
 import messages.Message;
 import messages.MessageForwarder;
 import protocols.Backup;
+import protocols.Restore;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -100,7 +101,8 @@ public class Peer implements RMIStub {
 
     @Override
     public void restoreProtocol(String file) {
-
+        Restore restore = new Restore(file);
+        restore.run();
     }
 
     @Override

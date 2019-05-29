@@ -31,11 +31,10 @@ public class RestoreMessage extends Message {
     public void handleMessage() {
 
         if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "/backup/" + hashFile)) {
-
             try {
                 byte[] content = FileHandler.readFromFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "/backup/" + hashFile);
 
-                //MessageForwarder.sendMessage(new RestoreCompleteMessage());
+                MessageForwarder.sendMessage(new RestoreFile(ci, hashFile, filename, content, ci.getIp(), ci.getPort()));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -45,6 +44,7 @@ public class RestoreMessage extends Message {
             }
         } else {
 
+            System.out.println("No such file");
         }
         //MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile), ci.getIp(), ci.getPort());
 
