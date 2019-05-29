@@ -8,14 +8,13 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class FileHandler {
 
@@ -25,7 +24,7 @@ public class FileHandler {
 
         AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.READ);
 
-        int fileSize = (int)new File(filename).length();
+        int fileSize = (int) new File(filename).length();
 
         System.out.println(fileSize);
 
@@ -44,16 +43,18 @@ public class FileHandler {
 
         return byteArray;
     }
+
     public static boolean checkFileExists(String filename) {
         Path path = Paths.get(filename);
 
         return Files.exists(path);
     }
+
     public static void writeFile(String filename, byte[] fileContent) throws IOException, ExecutionException, InterruptedException {
 
         Path path = Paths.get(filename);
 
-        if(!checkFileExists(filename))
+        if (!checkFileExists(filename))
             Files.createFile(path);
 
         AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
@@ -81,7 +82,7 @@ public class FileHandler {
         return String.valueOf(Files.getLastModifiedTime(path));
     }
 
-    public static void createDir(String type){
+    public static void createDir(String type) {
 
         String typeDirName = "./peerDisk/peer" + Peer.getPeerAccessPoint() + "/" + type;
 
@@ -89,7 +90,7 @@ public class FileHandler {
 
         boolean backupExists = Files.exists(dirPath);
 
-        if(backupExists) {
+        if (backupExists) {
             System.out.println("Directory already exists");
         } else {
             try {
@@ -99,8 +100,10 @@ public class FileHandler {
             }
         }
     }
+
     /**
      * Encrypts a string(text) that is the filename and returns the new hashed fileId
+     *
      * @param filename
      * @return String
      */
@@ -111,13 +114,49 @@ public class FileHandler {
         BigInteger slot = null;
         try {
             String hashString = filename + getLastModified(filename);
-            slot = new BigInteger(1,digest.digest(hashString.getBytes(StandardCharsets.UTF_8)));
+            slot = new BigInteger(1, digest.digest(hashString.getBytes(StandardCharsets.UTF_8)));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        int n = (int)Math.pow(2,8);
+        int n = (int) Math.pow(2, 8);
 
         return slot.mod(new BigInteger("" + n));
     }
 
+    public static void deleteFile(String filename) {
+        Path filePath = Paths.get(filename);
+        if (Files.exists(filePath)) {
+            try {
+                System.out.println("! Deleting File From The Configured Path !");
+                Files.delete(filePath);
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        } else {
+            System.out.println("File does not exist ");
+        }
+    }
+    // FUNCION COPIED FROM https://stackoverflow.com/questions/7255592/get-file-directory-size-using-java-7-new-io
+    public static long getSize(Path startPath) throws IOException {
+        final AtomicLong size = new AtomicLong(0);
+
+        Files.walkFileTree(startPath, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file,
+                                             BasicFileAttributes attrs) throws IOException {
+                size.addAndGet(attrs.size());
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc)
+                    throws IOException {
+                // Skip folders that can't be traversed
+                System.out.println("skipped: " + file + "e=" + exc);
+                return FileVisitResult.CONTINUE;
+            }
+        });
+
+        return size.get();
+    }
 }
