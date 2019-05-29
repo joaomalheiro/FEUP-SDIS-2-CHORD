@@ -32,16 +32,23 @@ public class SucessorMessage extends Message {
             for(index = 0; index < ChordInfo.getM() * 8; index++)
             {
                 String res = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, ChordInfo.getM() * 8);
-                if(res.equals(ci.getHashedKey().toString()))
+                if(res.equals(receivedKey))
                     break;
             }
         }
 
         ChordInfo.getFingerTable().set(index,ci);
 
+        if(receivedKey.equals(ChordInfo.peerHash))
+            return;
+
         try {
+            System.out.println("Before creating");
             PredecessorMessage predecessorMessage = new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),ci.getIp(), ci.getPort());
+            System.out.println("Before send");
             MessageForwarder.sendMessage(predecessorMessage);
+            System.out.println("After send");
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }

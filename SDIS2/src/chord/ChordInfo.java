@@ -14,6 +14,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class ChordInfo implements Runnable{
     private final static int mBytes = 1; //hash size in bytes
@@ -61,7 +62,7 @@ public class ChordInfo implements Runnable{
         printFingerTable();
 
         FixFingers ff = new FixFingers();
-        Peer.executor.submit(ff);
+        Peer.executor.scheduleAtFixedRate(ff,0,2000, TimeUnit.MILLISECONDS);
     }
 
     private void initFingerTable() throws UnknownHostException {
@@ -185,6 +186,9 @@ public class ChordInfo implements Runnable{
                     continue;
 
                 if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
+                    if(fingerTable.get(i).getHashedKey().equals(ChordInfo.peerHash))
+                        continue;
+
                     parameters = new String[]{fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
                     return new LookupMessage(senderInfo,fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
                 }

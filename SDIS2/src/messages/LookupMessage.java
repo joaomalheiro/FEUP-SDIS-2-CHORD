@@ -26,9 +26,8 @@ public class LookupMessage extends Message {
             Message message = ChordInfo.searchSuccessor2(ci);
             MessageForwarder.sendMessage(message);
         }
-
-
     }
+
     @Override
     public String getIpAddress() {
         return this.ipAddress;

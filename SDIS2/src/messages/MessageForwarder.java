@@ -1,5 +1,7 @@
 package messages;
 
+import peer.Peer;
+
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.DataOutputStream;
@@ -11,6 +13,10 @@ public class MessageForwarder {
 
     public synchronized static void sendMessage(Message message){
         System.out.println("Sending " + message + " to :  " + message.getIpAddress() + message.getPort());
+
+        if(message.getPort() == Peer.port)
+            return;
+
         SSLSocketFactory socketFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket clientSocket;
         try {
@@ -19,7 +25,7 @@ public class MessageForwarder {
 
             ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
             outToServer.writeObject(message);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

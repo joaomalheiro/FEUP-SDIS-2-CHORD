@@ -50,19 +50,23 @@ public class FixFingers implements Runnable {
         System.out.println(res);
 
         if(res != null){
-            if(res instanceof SucessorMessage)
+            System.out.println(res);
+            if(res instanceof SucessorMessage) {
                 fingerTable.set(index, ((SucessorMessage) res).getCi());
+            }
             else if (res instanceof LookupMessage)
             {
                 //parameters = new String[]{key, InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
                 //msg = MessageForwarder.addHeader("LOOKUP", parameters);
                 //MessageForwarder.sendMessage(msg, tokens[1], Integer.parseInt(tokens[2]));
+                System.out.println("Entrou if");
                 MessageForwarder.sendMessage(res);
             }
         }
 
         ChordInfo.printFingerTable();
 
-        Peer.executor.schedule(this, 2, TimeUnit.SECONDS);
+
+        //Peer.executor.schedule(this, 2, TimeUnit.SECONDS);
     }
 }
