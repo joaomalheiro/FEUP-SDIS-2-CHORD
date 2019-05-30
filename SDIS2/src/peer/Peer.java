@@ -50,6 +50,10 @@ public class Peer implements RMIStub {
 
         ChordManager ci = new ChordManager();
         executor.submit(ci);
+        
+        storage = new Storage(10000);
+        if (storage.getSpaceReserved() < storage.getSpaceOcupied())
+            FileHandler.clearStorageSpace();
 
         if (connectionInfo.getPort() != 0) {
             MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort()));
@@ -84,9 +88,7 @@ public class Peer implements RMIStub {
             connectionInfo.setIp(args[3]);
             connectionInfo.setPort(Integer.parseInt(args[4]));
         }
-        storage = new Storage(10000);
-        if (storage.getSpaceReserved() < storage.getSpaceOcupied())
-            FileHandler.clearStorageSpace();
+
 
     }
 
