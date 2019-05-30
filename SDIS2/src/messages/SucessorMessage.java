@@ -29,9 +29,9 @@ public class SucessorMessage extends Message {
         if(receivedKey.equals(ChordManager.peerHash.toString())) {
             index = 0;
         } else {
-            for(index = 0; index < ChordManager.getM() * 8; index++)
+            for(index = 0; index < ChordManager.getM(); index++)
             {
-                String res = ChordManager.calculateNextKey(ChordManager.peerHash, index, ChordManager.getM() * 8);
+                String res = ChordManager.calculateNextKey(ChordManager.peerHash, index, ChordManager.getM());
                 if(res.equals(receivedKey))
                     break;
             }
