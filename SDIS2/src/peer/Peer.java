@@ -26,6 +26,7 @@ public class Peer implements RMIStub {
     public static ConnectionInfo connectionInfo;
     public static final CheckPredecessor checkPredecessor = new CheckPredecessor(500);
     public static Storage storage;
+    private static Peer instance = null;
 
     static {
         try {
@@ -62,9 +63,9 @@ public class Peer implements RMIStub {
         executor.scheduleAtFixedRate(new Stabilize(), 0, 2000, TimeUnit.MILLISECONDS);
 
         RMIStub stub;
-        Peer peer = new Peer();
+        instance = new Peer();
 
-        stub = (RMIStub) UnicastRemoteObject.exportObject(peer, 0);
+        stub = (RMIStub) UnicastRemoteObject.exportObject(instance, 0);
 
         try {
             Registry reg = LocateRegistry.getRegistry();
