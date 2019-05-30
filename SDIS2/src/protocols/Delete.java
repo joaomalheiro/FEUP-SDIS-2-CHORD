@@ -19,11 +19,10 @@ public class Delete implements Runnable{
     private BigInteger hashfile;
 
     public Delete(String filename) {
-        try {
-            this.hashfile = FileHandler.encrypt(filename);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+
+            String [] params = new String[] {filename};
+            //TODO: NÃO DEVIA ESTAR A DAR ENCRYPT COM O LASTMODIFIED?
+            this.hashfile = ChordManager.encrypt(params);
     }
 
     @Override
