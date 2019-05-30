@@ -44,12 +44,7 @@ public class ChordManager implements Runnable{
      * Calls functions to create hash and fill finger table
      */
     private void setChord() throws UnknownHostException {
-        String s = getPeerHash(Peer.port);
-        System.out.println(s);
-        long p = convertToDec(s);
-        System.out.println(p);
-
-        ChordManager.peerHash = BigInteger.valueOf(p);
+        ChordManager.peerHash = BigInteger.valueOf(convertToDec(getPeerHash(Peer.port)));
         System.out.println("peer.Peer hash = " + peerHash + "\n");
 
         FileHandler.createDir("backup");
