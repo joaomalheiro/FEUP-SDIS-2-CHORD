@@ -59,7 +59,8 @@ public class BackupReadyMessage extends Message {
                     }
                 }
 
-                BigInteger fileHash = FileHandler.encrypt(filename);
+                String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
+                BigInteger fileHash = ChordManager.encrypt(params);
 
                 MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), fileHash, repDegree, content, ci.getIp(), ci.getPort()));
             } catch (IOException e) {
@@ -67,8 +68,6 @@ public class BackupReadyMessage extends Message {
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
     }

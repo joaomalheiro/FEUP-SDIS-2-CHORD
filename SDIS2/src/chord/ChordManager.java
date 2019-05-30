@@ -44,7 +44,8 @@ public class ChordManager implements Runnable{
      * Calls functions to create hash and fill finger table
      */
     private void setChord() throws UnknownHostException {
-        ChordManager.peerHash = BigInteger.valueOf(convertToDec(getPeerHash(Peer.port)));
+        String [] params = new String[] {String.valueOf(Peer.port)};
+        ChordManager.peerHash = encrypt(params);
         System.out.println("peer.Peer hash = " + peerHash + "\n");
 
         FileHandler.createDir("backup");
@@ -64,12 +65,18 @@ public class ChordManager implements Runnable{
     }
 
     public static void printFingerTable() {
-        System.out.println("Predecessor: " + ChordManager.predecessor);
         System.out.println("FingerTable");
 
-        for(ConnectionInfo finger : fingerTable){
+        /*for(ConnectionInfo finger : fingerTable){
             System.out.println(finger.getHashedKey() + " : " + finger.getIp() + " : " + finger.getPort());
+        }*/
+
+        for (int i = 0; i < fingerTable.size(); i++)
+        {
+            ConnectionInfo finger = fingerTable.get(i);
+            System.out.println(i + " : " + finger.getHashedKey() + " : " + finger.getIp() + " : " + finger.getPort());
         }
+
     }
 
     private static long convertToDec(String hex)
@@ -81,19 +88,18 @@ public class ChordManager implements Runnable{
             char c = hex.charAt(i);
             int d = digits.indexOf(c);
             val = 16 * val + d;
-            System.out.println(c + " " + d + " " + val);
         }
         return val;
     }
     /**
      * Creates hash with size hashSize from server's port
      *
-     * @param port Peer port
+     * @param params List of parameters to be used for hashing
      * @return hash
      */
-    private static String getPeerHash(int port)
+    public static BigInteger encrypt(String[] params)
     {
-        String originalString;
+        String originalString = "";
         MessageDigest md = null;
         StringBuilder result = new StringBuilder();
 
@@ -104,7 +110,14 @@ public class ChordManager implements Runnable{
             System.exit(1);
         }
 
-        originalString = "" + port;
+        for(int i = 0; i < params.length; i++) {
+            originalString += params[i];
+
+            if(i < params.length - 1)
+                originalString += " ";
+        }
+
+        System.out.println(originalString);
 
         md.update(originalString.getBytes());
         byte[] hashBytes = md.digest();
@@ -114,7 +127,9 @@ public class ChordManager implements Runnable{
         for (byte byt : trimmedHashBytes)
             result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
 
-        return result.toString();
+        long resultLong = convertToDec(result.toString());
+
+        return BigInteger.valueOf(resultLong);
     }
 
     /**

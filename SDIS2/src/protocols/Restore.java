@@ -25,8 +25,9 @@ public class Restore implements Runnable {
 
         BigInteger hashFile = null;
         try {
-            hashFile = FileHandler.encrypt(filename);
-        } catch (NoSuchAlgorithmException e) {
+            String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
+            hashFile = ChordManager.encrypt(params);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
