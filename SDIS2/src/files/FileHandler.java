@@ -12,9 +12,11 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Comparator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Consumer;
 
 public class FileHandler {
 
@@ -123,19 +125,33 @@ public class FileHandler {
         return slot.mod(new BigInteger("" + n));
     }
 
-    public static void deleteFile(String filename) {
-        Path filePath = Paths.get(filename);
-        if (Files.exists(filePath)) {
-            try {
-                System.out.println("! Deleting File From The Configured Path !");
-                Files.delete(filePath);
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        } else {
-            System.out.println("File does not exist ");
-        }
+    public static void clearStorageSpace() throws IOException {
+        Path rootPath = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint());
+
+        Files.walk(rootPath)
+                .sorted(Comparator.reverseOrder())
+                .map(Path::toFile)
+                .peek(System.out::println)
+                .forEach(FileHandler::deleteFile);
     }
+
+    public static void deleteFile(File file){
+        System.out.println(file);
+        System.out.println(Peer.storage);
+        System.out.println(Peer.storage.getSpaceReserved());
+        System.out.println(Peer.storage.getSpaceOcupied());
+
+        if(Peer.storage.getSpaceReserved() < Peer.storage.getSpaceOcupied()){
+            handleDeleteFile(file);
+            file.delete();
+        } else return;
+    }
+
+    private static void handleDeleteFile(File file) {
+
+    }
+
+
     // FUNCION COPIED FROM https://stackoverflow.com/questions/7255592/get-file-directory-size-using-java-7-new-io
     public static long getSize(Path startPath) throws IOException {
         final AtomicLong size = new AtomicLong(0);

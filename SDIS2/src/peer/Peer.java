@@ -27,17 +27,20 @@ public class Peer implements RMIStub {
     public static int port;
     public static ConnectionInfo connectionInfo;
     public static final CheckPredecessor checkPredecessor = new CheckPredecessor(500);
+    public static Storage storage;
+
     static {
         try {
-            connectionInfo = new ConnectionInfo(new BigInteger(String.valueOf(0)),InetAddress.getLocalHost().getHostAddress(), 0);
+            connectionInfo = new ConnectionInfo(new BigInteger(String.valueOf(0)), InetAddress.getLocalHost().getHostAddress(), 0);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
     }
+
     public static ScheduledExecutorService executor;
 
-    public static void main(String args[]) throws IOException{
-        if(args.length < 3 || args.length > 5)
+    public static void main(String args[]) throws IOException {
+        if (args.length < 3 || args.length > 5)
             return;
 
         initAtributes(args);
@@ -50,11 +53,11 @@ public class Peer implements RMIStub {
         ChordInfo ci = new ChordInfo();
         executor.submit(ci);
 
-        if(connectionInfo.getPort() != 0) {
-            MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort()));
+        if (connectionInfo.getPort() != 0) {
+            MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort()));
         }
-        executor.scheduleAtFixedRate(checkPredecessor,0,2000, TimeUnit.MILLISECONDS);
-        executor.scheduleAtFixedRate(new Stabilize(),0,2000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(checkPredecessor, 0, 2000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(new Stabilize(), 0, 2000, TimeUnit.MILLISECONDS);
 
         RMIStub stub;
         Peer peer = new Peer();
@@ -72,19 +75,20 @@ public class Peer implements RMIStub {
         }
     }
 
-    private static void initAtributes(String[] args){
+    private static void initAtributes(String[] args) throws IOException {
         protocolVersion = args[0];
         peerAccessPoint = args[1];
         port = Integer.parseInt(args[2]);
 
-        if(args.length == 4) {
+        if (args.length == 4) {
             connectionInfo.setPort(Integer.parseInt(args[3]));
-        } else
-            if(args.length == 5){
-                connectionInfo.setIp(args[3]);
-                connectionInfo.setPort(Integer.parseInt(args[4]));
-            }
-
+        } else if (args.length == 5) {
+            connectionInfo.setIp(args[3]);
+            connectionInfo.setPort(Integer.parseInt(args[4]));
+        }
+        storage = new Storage(100);
+        if (storage.getSpaceReserved() < storage.getSpaceOcupied())
+            FileHandler.clearStorageSpace();
         FileHandler.createDir("backup");
         FileHandler.createDir("restored");
     }

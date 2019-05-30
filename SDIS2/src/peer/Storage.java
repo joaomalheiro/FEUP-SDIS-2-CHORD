@@ -1,11 +1,9 @@
 package peer;
 
 import files.FileHandler;
-import messages.Message;
-import peer.Peer;
 
-import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
@@ -13,20 +11,20 @@ import java.util.Hashtable;
 public class Storage {
     private long spaceReserved;
     private long spaceOcupied;
-    private Hashtable<Integer, Integer> initBackupChunks;
+    private Hashtable<BigInteger, String> fileStored;
 
     public Storage(long spaceReserved) throws IOException {
         this.spaceReserved = spaceReserved;
         updateSpaceOcupied();
-        if (this.spaceReserved < this.spaceOcupied) {
-            clearStorageSpace();
-        }
+        /*if (this.spaceReserved < this.spaceOcupied) {
+            FileHandler.clearStorageSpace();
+        }*/
 
-        initBackupChunks = new Hashtable<>();
+        fileStored = new Hashtable<>();
     }
 
-    public void insertHashtable(Integer chunkId, Integer repDegree) {
-        initBackupChunks.put(chunkId, repDegree);
+    public void insertHashtable(BigInteger hashFile, String fileName) {
+        fileStored.put(hashFile, fileName);
     }
 
     public long getSpaceReserved() {
@@ -40,6 +38,7 @@ public class Storage {
     public void updateSpaceOcupied() throws IOException {
         Path pathPeerFolder = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint());
         this.spaceOcupied = FileHandler.getSize(pathPeerFolder) / 1024;
+        System.out.println("SPACE OCUPPIED: " + this.spaceOcupied);
     }
 
     public boolean allowChunk(byte[] chunkData) throws IOException {
@@ -51,39 +50,11 @@ public class Storage {
         this.spaceReserved = spaceReserved;
         updateSpaceOcupied();
         if (this.spaceReserved < this.spaceOcupied) {
-            clearStorageSpace();
+            FileHandler.clearStorageSpace();
         }
     }
 
-    private void clearStorageSpace() {
-        FileHandler.deleteFile("./peerDisk/peer" + Peer.getPeerAccessPoint());
-    }
-
-
-   /* private void handleDeleteFile(File file) {
-        String absolutePath = file.getAbsolutePath();
-        String fileId;
-        int chunkNumber;
-
-        String[] path;
-        if (System.getProperty("os.name").equals("Linux")) {
-            path = absolutePath.split("/");
-        } else {
-            path = absolutePath.split("\\\\");
-        }
-
-        if (path[path.length - 1].contains("chk")) {
-            fileId = path[path.length - 2];
-            chunkNumber = Integer.parseInt(path[path.length - 1].replace("chk", ""));
-            //System.out.println(fileId + " " + chunkNumber);
-            Message deleteMsg = new Message(Peer.getProtocolVersion(), Integer.parseInt(Peer.getPeerAccessPoint()), fileId, chunkNumber, 0, null);
-            deleteMsg.createRemoved();
-
-        }
-
-    }*/
-
-    public Hashtable<Integer, Integer> getHashtable() {
-        return initBackupChunks;
+    public Hashtable<BigInteger, String > getHashtable() {
+        return fileStored;
     }
 }
