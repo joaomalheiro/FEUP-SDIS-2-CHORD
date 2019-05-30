@@ -41,22 +41,23 @@ public class BackupMessage extends Message {
     }
 
     public void handleMessage() {
-       /* if(Peer.storage.getSpaceOcupied() + body.length > Peer.storage.getSpaceReserved()){
+        if (Peer.storage.getSpaceOcupied() + body.length > Peer.storage.getSpaceReserved()) {
             System.out.println("Not enough space to save file");
-            MessageForwarder.sendMessage(new BackupMessage(ci,hashFile,repDegree,body,ChordManager.getFingerTable().get(0).getIp(),ChordManager.getFingerTable().get(0).getPort()));
-        }*/
+            MessageForwarder.sendMessage(new BackupMessage(ci, hashFile, repDegree, body, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort()));
+        } else {
 
-        try {
-            FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/backup/" + hashFile, body);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            try {
+                FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/backup/" + hashFile, body);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile, this.repDegree, ci.getIp(), ci.getPort()));
+
         }
-        
-        MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile,this.repDegree,ci.getIp(), ci.getPort()));
-
     }
 }
