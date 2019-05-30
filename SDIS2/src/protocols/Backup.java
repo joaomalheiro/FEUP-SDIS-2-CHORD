@@ -6,6 +6,7 @@ import files.FileHandler;
 import messages.*;
 import peer.Peer;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -27,8 +28,10 @@ public class Backup implements Runnable{
 
         BigInteger hashFile = null;
         try {
-            hashFile = FileHandler.encrypt(filename);
-        } catch (NoSuchAlgorithmException e) {
+            String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
+            hashFile = ChordManager.encrypt(params);
+            //hashFile = FileHandler.encrypt(filename);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -120,7 +120,7 @@ public class FileHandler {
      * @param filename
      * @return String
      */
-    public static BigInteger encrypt(String filename) throws NoSuchAlgorithmException {
+    /*public static BigInteger encrypt(String filename) throws NoSuchAlgorithmException {
 
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
@@ -134,7 +134,7 @@ public class FileHandler {
         int n = (int) Math.pow(2, 8);
 
         return slot.mod(new BigInteger("" + n));
-    }
+    }*/
 
     public static void clearStorageSpace() throws IOException {
         Path rootPath = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash);
