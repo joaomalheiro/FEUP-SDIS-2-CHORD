@@ -6,6 +6,7 @@ import files.FileHandler;
 import messages.LookupMessage;
 import messages.MessageForwarder;
 import protocols.Backup;
+import protocols.Reclaim;
 import protocols.Restore;
 
 import java.io.*;
@@ -52,7 +53,7 @@ public class Peer implements RMIStub {
         ChordManager ci = new ChordManager();
         executor.submit(ci);
         
-        storage = new Storage(10);
+        storage = new Storage(100000);
         if (storage.getSpaceReserved() < storage.getSpaceOcupied())
             FileHandler.clearStorageSpace();
 
@@ -116,7 +117,8 @@ public class Peer implements RMIStub {
 
     @Override
     public void reclaimProtocol(int reservedSpace) {
-
+        Reclaim reclaim = new Reclaim(reservedSpace);
+        reclaim.run();
     }
 
     @Override

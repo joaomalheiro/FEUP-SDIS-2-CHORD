@@ -153,8 +153,10 @@ public class FileHandler {
 
     private static void handleDeleteFile(Path path) throws IOException {
         byte[] content = Files.readAllBytes(path);
-        BackupMessage saveMessage = new BackupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort());
-        MessageForwarder.sendMessage(saveMessage);
+        //BackupMessage saveMessage = new BackupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort());
+        //MessageForwarder.sendMessage(saveMessage);
+        DeleteHandler handler = new DeleteHandler(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content);
+        Peer.executor.submit(handler);
     }
 
 
