@@ -51,7 +51,7 @@ public class Peer implements RMIStub {
         ChordManager ci = new ChordManager();
         executor.submit(ci);
         
-        storage = new Storage(10000);
+        storage = new Storage(10);
         if (storage.getSpaceReserved() < storage.getSpaceOcupied())
             FileHandler.clearStorageSpace();
 
