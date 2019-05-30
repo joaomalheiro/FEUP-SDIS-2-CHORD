@@ -1,6 +1,6 @@
 package messages;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import peer.Peer;
 
@@ -28,10 +28,10 @@ public class GetPredecessorMessage extends Message {
     }
     @Override
     public void handleMessage() throws UnknownHostException {
-        if(ChordInfo.predecessor == null){
+        if(ChordManager.predecessor == null){
             MessageForwarder.sendMessage(new ResponsePredecessorMessage(new ConnectionInfo(null, InetAddress.getLocalHost().getHostAddress(), Peer.port), ci.getIp(), ci.getPort()));
         } else {
-            MessageForwarder.sendMessage(new ResponsePredecessorMessage(new ConnectionInfo(ChordInfo.getPredecessor().getHashedKey(),ChordInfo.getPredecessor().getIp(),ChordInfo.getPredecessor().getPort()), ci.getIp(), ci.getPort()));
+            MessageForwarder.sendMessage(new ResponsePredecessorMessage(new ConnectionInfo(ChordManager.getPredecessor().getHashedKey(), ChordManager.getPredecessor().getIp(), ChordManager.getPredecessor().getPort()), ci.getIp(), ci.getPort()));
         }
     }
 

@@ -1,6 +1,6 @@
 package messages;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import peer.Peer;
@@ -8,7 +8,6 @@ import peer.Peer;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 
@@ -51,7 +50,7 @@ public class BackupReadyMessage extends Message {
                 if((this.ci.getPort() == Peer.port) && (this.ci.getIp().equals(InetAddress.getLocalHost().getHostAddress()))) {
 
                     try {
-                        FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/backup/" + hashFile, content);
+                        FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/backup/" + hashFile, content);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
@@ -63,7 +62,7 @@ public class BackupReadyMessage extends Message {
 
                 BigInteger fileHash = FileHandler.encrypt(filename);
 
-                MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), fileHash, repDegree, content, ci.getIp(), ci.getPort()));
+                MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), fileHash, repDegree, content, ci.getIp(), ci.getPort()));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {

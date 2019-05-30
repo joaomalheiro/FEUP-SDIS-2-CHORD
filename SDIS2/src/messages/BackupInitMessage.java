@@ -1,6 +1,6 @@
 package messages;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 
 import java.math.BigInteger;
@@ -38,7 +38,7 @@ public class BackupInitMessage extends Message {
 
     public void handleMessage() {
 
-       Message res = ChordInfo.searchSuccessor2(ci);
+       Message res = ChordManager.searchSuccessor2(ci);
        if(res instanceof SucessorMessage) {
            System.out.println("res is sucessor, gonna send backup ready with " + res.getIpAddress() + " " + res.getPort());
            MessageForwarder.sendMessage(new BackupReadyMessage(((SucessorMessage) res).getCi(),this.hashFile, this.repDegree, this.filename,ci.getIp(),ci.getPort()));

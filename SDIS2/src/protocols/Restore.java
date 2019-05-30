@@ -1,12 +1,11 @@
 package protocols;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import messages.*;
 import peer.Peer;
 
-import java.awt.*;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -31,11 +30,11 @@ public class Restore implements Runnable {
             e.printStackTrace();
         }
 
-        if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/backup/" + hashFile)){
+        if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/backup/" + hashFile)){
             try {
-                byte[] content = FileHandler.readFromFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash  + "/backup/" + hashFile);
+                byte[] content = FileHandler.readFromFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash  + "/backup/" + hashFile);
 
-                FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/restored/" + filename, content);
+                FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/restored/" + filename, content);
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
@@ -53,7 +52,7 @@ public class Restore implements Runnable {
                 e.printStackTrace();
             }
 
-            Message res = ChordInfo.searchSuccessor2(ci);
+            Message res = ChordManager.searchSuccessor2(ci);
             if (res instanceof SucessorMessage) {
                 MessageForwarder.sendMessage(new RestoreMessage(ci, hashFile, this.filename, ((SucessorMessage) res).getCi().getIp(), ((SucessorMessage) res).getCi().getPort()));
             } else if (res instanceof LookupMessage) {

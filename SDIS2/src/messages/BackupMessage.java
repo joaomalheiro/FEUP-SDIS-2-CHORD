@@ -1,6 +1,6 @@
 package messages;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import peer.Peer;
@@ -44,7 +44,7 @@ public class BackupMessage extends Message {
         //check if peer has space
 
         try {
-            FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/backup/" + hashFile, body);
+            FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/backup/" + hashFile, body);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

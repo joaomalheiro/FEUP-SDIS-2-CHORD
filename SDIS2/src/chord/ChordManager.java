@@ -3,7 +3,6 @@ package chord;
 import files.FileHandler;
 import messages.LookupMessage;
 import messages.Message;
-import messages.MessageForwarder;
 import messages.SucessorMessage;
 import peer.FixFingers;
 import peer.Peer;
@@ -17,13 +16,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-public class ChordInfo implements Runnable{
+public class ChordManager implements Runnable{
     private final static int mBytes = 1; //hash size in bytes
     public static BigInteger peerHash;
     private static ArrayList<ConnectionInfo> fingerTable = new ArrayList<>(mBytes * 8);
     public static ConnectionInfo predecessor = null;
 
-    public ChordInfo(){
+    public ChordManager(){
         try {
             setChord();
         } catch (UnknownHostException e) {
@@ -46,7 +45,7 @@ public class ChordInfo implements Runnable{
      */
     private void setChord() throws UnknownHostException {
 
-        ChordInfo.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes, Peer.port),16));
+        ChordManager.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes, Peer.port),16));
         System.out.println("peer.Peer hash = " + peerHash + "\n");
 
         //se não for o primeiro peer no sistema
@@ -56,7 +55,7 @@ public class ChordInfo implements Runnable{
 
         /*for(int i = 0; i < mBytes * 8; i++) {
             String hash = calculateNextKey(peerHash, i, mBytes * 8);
-            fingerTable.add(new ConnectionInfo(new BigInteger(hash), InetAddress.getLocalHost().getHostAddress(), Peer.port));
+            fingerTa\ble.add(new ConnectionInfo(new BigInteger(hash), InetAddress.getLocalHost().getHostAddress(), Peer.port));
         }*/
 
         FileHandler.createDir("backup");
@@ -76,7 +75,7 @@ public class ChordInfo implements Runnable{
     }
 
     public static void printFingerTable() {
-        System.out.println("Predecessor: " + ChordInfo.predecessor);
+        System.out.println("Predecessor: " + ChordManager.predecessor);
         System.out.println("FingerTable");
 
         for(ConnectionInfo finger : fingerTable){
@@ -191,7 +190,7 @@ public class ChordInfo implements Runnable{
                     continue;
 
                 if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
-                    if(fingerTable.get(i).getHashedKey().equals(ChordInfo.peerHash))
+                    if(fingerTable.get(i).getHashedKey().equals(ChordManager.peerHash))
                         continue;
                     System.out.println("Index = " + i + " Node = " + fingerTable.get(i));
                     parameters = new String[]{fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
@@ -202,8 +201,8 @@ public class ChordInfo implements Runnable{
             System.out.println("Proprio");
 
             try {
-                parameters = new String[]{ChordInfo.peerHash.toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
-                return new SucessorMessage(senderInfo.getHashedKey().toString(),new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),senderInfo.getIp(),senderInfo.getPort());
+                parameters = new String[]{ChordManager.peerHash.toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
+                return new SucessorMessage(senderInfo.getHashedKey().toString(),new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),senderInfo.getIp(),senderInfo.getPort());
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

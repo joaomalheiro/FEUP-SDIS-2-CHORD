@@ -1,6 +1,6 @@
 package messages;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import peer.Peer;
 
@@ -26,25 +26,25 @@ public class SucessorMessage extends Message {
 
         int index;
 
-        if(receivedKey.equals(ChordInfo.peerHash.toString())) {
+        if(receivedKey.equals(ChordManager.peerHash.toString())) {
             index = 0;
         } else {
-            for(index = 0; index < ChordInfo.getM() * 8; index++)
+            for(index = 0; index < ChordManager.getM() * 8; index++)
             {
-                String res = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, ChordInfo.getM() * 8);
+                String res = ChordManager.calculateNextKey(ChordManager.peerHash, index, ChordManager.getM() * 8);
                 if(res.equals(receivedKey))
                     break;
             }
         }
 
-        ChordInfo.getFingerTable().set(index,ci);
+        ChordManager.getFingerTable().set(index,ci);
 
-        if(receivedKey.equals(ChordInfo.peerHash))
+        if(receivedKey.equals(ChordManager.peerHash))
             return;
 
         try {
             //System.out.println("Before creating");
-            PredecessorMessage predecessorMessage = new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),ci.getIp(), ci.getPort());
+            PredecessorMessage predecessorMessage = new PredecessorMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),ci.getIp(), ci.getPort());
             //System.out.println("Before send");
             MessageForwarder.sendMessage(predecessorMessage);
             //System.out.println("After send");

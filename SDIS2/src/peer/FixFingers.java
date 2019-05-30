@@ -1,6 +1,6 @@
 package peer;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import messages.LookupMessage;
 import messages.Message;
@@ -11,7 +11,6 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 public class FixFingers implements Runnable {
 
@@ -19,21 +18,21 @@ public class FixFingers implements Runnable {
 
     @Override
     public void run() {
-        int mBits = ChordInfo.getM() * 8;
+        int mBits = ChordManager.getM() * 8;
 
         index++;
 
         if(index == mBits) {
             index = 0;
-            ChordInfo.printFingerTable();
+            ChordManager.printFingerTable();
         }
 
-        String key = ChordInfo.calculateNextKey(ChordInfo.peerHash, index, mBits);
-        ArrayList<ConnectionInfo> fingerTable = ChordInfo.getFingerTable();
+        String key = ChordManager.calculateNextKey(ChordManager.peerHash, index, mBits);
+        ArrayList<ConnectionInfo> fingerTable = ChordManager.getFingerTable();
 
         if(index > (fingerTable.size() - 1)) {
             try {
-                fingerTable.add(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port));
+                fingerTable.add(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port));
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }
@@ -41,7 +40,7 @@ public class FixFingers implements Runnable {
 
         Message res = null;
         try {
-            res = ChordInfo.searchSuccessor2(new ConnectionInfo(new BigInteger(key), InetAddress.getLocalHost().getHostAddress(), Peer.port));
+            res = ChordManager.searchSuccessor2(new ConnectionInfo(new BigInteger(key), InetAddress.getLocalHost().getHostAddress(), Peer.port));
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -61,6 +60,6 @@ public class FixFingers implements Runnable {
             }
         }
 
-        ChordInfo.printFingerTable();
+        ChordManager.printFingerTable();
     }
 }
