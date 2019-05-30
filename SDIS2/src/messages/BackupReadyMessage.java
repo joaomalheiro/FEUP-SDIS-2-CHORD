@@ -44,7 +44,6 @@ public class BackupReadyMessage extends Message {
     public void handleMessage() {
 
             try {
-
                 byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
 
                 if((this.ci.getPort() == Peer.port) && (this.ci.getIp().equals(InetAddress.getLocalHost().getHostAddress()))) {

@@ -4,6 +4,7 @@ import chord.ChordManager;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import peer.Peer;
+import protocols.Backup;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -56,6 +57,8 @@ public class BackupMessage extends Message {
                 e.printStackTrace();
             }
 
+            if(repDegree - 1 > 0)
+                MessageForwarder.sendMessage(new BackupMessage(ci, hashFile, repDegree - 1, body, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort()));
             MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile, this.repDegree, ci.getIp(), ci.getPort()));
 
         }
