@@ -8,6 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
 
+import chord.ChordManager;
+
 public class Storage {
     private long spaceReserved;
     private long spaceOcupied;
@@ -36,7 +38,7 @@ public class Storage {
     }
 
     public void updateSpaceOcupied() throws IOException {
-        Path pathPeerFolder = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint());
+        Path pathPeerFolder = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash);
         this.spaceOcupied = FileHandler.getSize(pathPeerFolder) / 1024;
         System.out.println("SPACE OCUPPIED: " + this.spaceOcupied);
     }

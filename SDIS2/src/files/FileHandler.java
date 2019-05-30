@@ -142,8 +142,10 @@ public class FileHandler {
         final List<Path> pathsToDelete = Files.walk(rootPath).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
         for(Path path : pathsToDelete) {
             if(Peer.storage.getSpaceReserved() < Peer.storage.getSpaceOcupied()) {
-                handleDeleteFile(path);
-                Files.deleteIfExists(path);
+            	if(Files.isRegularFile(path)){
+            		handleDeleteFile(path);
+                    Files.deleteIfExists(path);
+            	}
             }
         }
     }
