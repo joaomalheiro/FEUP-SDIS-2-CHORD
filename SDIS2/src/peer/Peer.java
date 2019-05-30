@@ -86,7 +86,7 @@ public class Peer implements RMIStub {
             connectionInfo.setIp(args[3]);
             connectionInfo.setPort(Integer.parseInt(args[4]));
         }
-        storage = new Storage(100);
+        storage = new Storage(10000);
         if (storage.getSpaceReserved() < storage.getSpaceOcupied())
             FileHandler.clearStorageSpace();
         FileHandler.createDir("backup");

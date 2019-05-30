@@ -41,10 +41,6 @@ public class Storage {
         System.out.println("SPACE OCUPPIED: " + this.spaceOcupied);
     }
 
-    public boolean allowChunk(byte[] chunkData) throws IOException {
-        updateSpaceOcupied();
-        return spaceOcupied + (chunkData.length / 1024) < spaceReserved;
-    }
 
     public void setSpaceReserved(long spaceReserved) throws IOException {
         this.spaceReserved = spaceReserved;

@@ -1,10 +1,16 @@
 package files;
 
+import chord.ChordInfo;
+import chord.ConnectionInfo;
+import messages.BackupMessage;
+import messages.Message;
+import messages.MessageForwarder;
 import peer.Peer;
 
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
@@ -13,10 +19,12 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class FileHandler {
 
@@ -128,27 +136,20 @@ public class FileHandler {
     public static void clearStorageSpace() throws IOException {
         Path rootPath = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint());
 
-        Files.walk(rootPath)
-                .sorted(Comparator.reverseOrder())
-                .map(Path::toFile)
-                .peek(System.out::println)
-                .forEach(FileHandler::deleteFile);
+        final List<Path> pathsToDelete = Files.walk(rootPath).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
+        for(Path path : pathsToDelete) {
+            if(Peer.storage.getSpaceReserved() < Peer.storage.getSpaceOcupied()) {
+                handleDeleteFile(path);
+                Files.deleteIfExists(path);
+            }
+        }
     }
 
-    public static void deleteFile(File file){
-        System.out.println(file);
-        System.out.println(Peer.storage);
-        System.out.println(Peer.storage.getSpaceReserved());
-        System.out.println(Peer.storage.getSpaceOcupied());
 
-        if(Peer.storage.getSpaceReserved() < Peer.storage.getSpaceOcupied()){
-            handleDeleteFile(file);
-            file.delete();
-        } else return;
-    }
-
-    private static void handleDeleteFile(File file) {
-
+    private static void handleDeleteFile(Path path) throws IOException {
+        byte[] content = Files.readAllBytes(path);
+        BackupMessage saveMessage = new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content, ChordInfo.getFingerTable().get(0).getIp(), ChordInfo.getFingerTable().get(0).getPort());
+        MessageForwarder.sendMessage(saveMessage);
     }
 
 
