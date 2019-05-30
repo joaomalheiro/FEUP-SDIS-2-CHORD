@@ -2,6 +2,7 @@ package peer;
 
 import messages.Message;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 
 public class MessageHandler implements Runnable{
@@ -24,6 +25,8 @@ public class MessageHandler implements Runnable{
         try {
           message.handleMessage();
         } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -6,6 +6,7 @@ import files.FileHandler;
 import messages.LookupMessage;
 import messages.MessageForwarder;
 import protocols.Backup;
+import protocols.Delete;
 import protocols.Reclaim;
 import protocols.Restore;
 
@@ -112,7 +113,8 @@ public class Peer implements RMIStub {
 
     @Override
     public void deleteProtocol(String file) {
-
+        Delete delete = new Delete(file);
+        delete.run();
     }
 
     @Override
