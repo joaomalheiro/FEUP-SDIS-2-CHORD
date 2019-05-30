@@ -17,9 +17,9 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class ChordManager implements Runnable{
-    private final static int mBytes = 1; //hash size in bytes
+    private final static int M = 32; //bits
     public static BigInteger peerHash;
-    private static ArrayList<ConnectionInfo> fingerTable = new ArrayList<>(mBytes * 8);
+    private static ArrayList<ConnectionInfo> fingerTable = new ArrayList<>(M);
     public static ConnectionInfo predecessor = null;
 
     public ChordManager(){
@@ -38,25 +38,19 @@ public class ChordManager implements Runnable{
         return fingerTable;
     }
 
-    public static int getM(){ return mBytes;}
+    public static int getM(){ return M;}
 
     /**
      * Calls functions to create hash and fill finger table
      */
     private void setChord() throws UnknownHostException {
+        String s = getPeerHash(Peer.port);
+        System.out.println(s);
+        long p = convertToDec(s);
+        System.out.println(p);
 
-        ChordManager.peerHash = BigInteger.valueOf(Integer.parseInt(getPeerHash(mBytes, Peer.port),16));
+        ChordManager.peerHash = BigInteger.valueOf(p);
         System.out.println("peer.Peer hash = " + peerHash + "\n");
-
-        //se não for o primeiro peer no sistema
-        if(Peer.connectionInfo.getPort() != 0) {
-           // Peer.executor.submit(new SuccessorRequest(Peer.connectionInfo.getPort(), Peer.port));
-        }
-
-        /*for(int i = 0; i < mBytes * 8; i++) {
-            String hash = calculateNextKey(peerHash, i, mBytes * 8);
-            fingerTa\ble.add(new ConnectionInfo(new BigInteger(hash), InetAddress.getLocalHost().getHostAddress(), Peer.port));
-        }*/
 
         FileHandler.createDir("backup");
         FileHandler.createDir("restored");
@@ -83,13 +77,26 @@ public class ChordManager implements Runnable{
         }
     }
 
+    private static long convertToDec(String hex)
+    {
+        String digits = "0123456789ABCDEF";
+        hex = hex.toUpperCase();
+        long val = 0;
+        for (int i = 0; i < hex.length(); i++) {
+            char c = hex.charAt(i);
+            int d = digits.indexOf(c);
+            val = 16 * val + d;
+            System.out.println(c + " " + d + " " + val);
+        }
+        return val;
+    }
     /**
      * Creates hash with size hashSize from server's port
      *
-     * @param hashSize hash size
+     * @param port Peer port
      * @return hash
      */
-    private static String getPeerHash(int hashSize, int port)
+    private static String getPeerHash(int port)
     {
         String originalString;
         MessageDigest md = null;
@@ -107,7 +114,7 @@ public class ChordManager implements Runnable{
         md.update(originalString.getBytes());
         byte[] hashBytes = md.digest();
 
-        byte[] trimmedHashBytes = Arrays.copyOf(hashBytes, hashSize);
+        byte[] trimmedHashBytes = Arrays.copyOf(hashBytes, M/8);
 
         for (byte byt : trimmedHashBytes)
             result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
@@ -137,51 +144,12 @@ public class ChordManager implements Runnable{
         return res.toString();
     }
 
-
-    //NOT TESTED !!
-   /* public static void searchSuccessor(ConnectionInfo senderInfo)
-    {
-        String message;
-        String parameters[];
-
-        BigInteger successorKey = fingerTable.get(0).getHashedKey();
-
-        if(numberInInterval(peerHash, successorKey, senderInfo.getHashedKey())) {
-
-            SucessorMessage sucessorMessage = new SucessorMessage(successorKey.toString(),new ConnectionInfo(senderInfo.getHashedKey(), fingerTable.get(0).getIp(), fingerTable.get(0).getPort()));
-            MessageForwarder.sendMessage(sucessorMessage, senderInfo.getIp(), senderInfo.getPort());
-        }
-
-        else {
-            for(int i = fingerTable.size()-1; i >= 0; i--){
-
-                if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
-                        LookupMessage lookupMessage = new LookupMessage(new ConnectionInfo(senderInfo.getHashedKey(), senderInfo.getIp(), senderInfo.getPort()));
-                        MessageForwarder.sendMessage(lookupMessage, fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
-                }
-            }
-
-            try {
-                SucessorMessage sucessorMessage = new SucessorMessage(senderInfo.getHashedKey().toString(), new ConnectionInfo(peerHash, InetAddress.getLocalHost().getHostAddress(),Peer.port));
-                MessageForwarder.sendMessage(sucessorMessage, senderInfo.getIp(), senderInfo.getPort());
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        }
-    }*/
-
     public static Message searchSuccessor2(ConnectionInfo senderInfo)
     {
-        String parameters[];
-
         BigInteger successorKey = fingerTable.get(0).getHashedKey();
 
-        System.out.println(senderInfo.getHashedKey() + " [ " + peerHash + ", " + successorKey + " ]");
-        if(numberInInterval(peerHash, successorKey, senderInfo.getHashedKey())) {
-            parameters = new String[]{successorKey.toString(), fingerTable.get(0).getIp(), String.valueOf(fingerTable.get(0).getPort())};
-            System.out.println("Sucessor");
+        if(numberInInterval(peerHash, successorKey, senderInfo.getHashedKey()))
             return new SucessorMessage(senderInfo.getHashedKey().toString(),new ConnectionInfo(fingerTable.get(0).getHashedKey(),fingerTable.get(0).getIp(),fingerTable.get(0).getPort()),senderInfo.getIp(),senderInfo.getPort());
-        }
 
         else {
             for(int i = fingerTable.size()-1; i >= 0; i--){
@@ -192,16 +160,12 @@ public class ChordManager implements Runnable{
                 if(numberInInterval(peerHash, senderInfo.getHashedKey(), fingerTable.get(i).getHashedKey())) {
                     if(fingerTable.get(i).getHashedKey().equals(ChordManager.peerHash))
                         continue;
-                    System.out.println("Index = " + i + " Node = " + fingerTable.get(i));
-                    parameters = new String[]{fingerTable.get(i).getIp(), String.valueOf(fingerTable.get(i).getPort())};
+
                     return new LookupMessage(senderInfo,fingerTable.get(i).getIp(), fingerTable.get(i).getPort());
                 }
             }
 
-            System.out.println("Proprio");
-
             try {
-                parameters = new String[]{ChordManager.peerHash.toString(), InetAddress.getLocalHost().getHostAddress(), String.valueOf(Peer.port)};
                 return new SucessorMessage(senderInfo.getHashedKey().toString(),new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port),senderInfo.getIp(),senderInfo.getPort());
             } catch (UnknownHostException e) {
                 e.printStackTrace();

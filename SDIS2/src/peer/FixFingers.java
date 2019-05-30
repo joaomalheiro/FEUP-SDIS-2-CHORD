@@ -18,16 +18,14 @@ public class FixFingers implements Runnable {
 
     @Override
     public void run() {
-        int mBits = ChordManager.getM() * 8;
-
         index++;
 
-        if(index == mBits) {
+        if(index == ChordManager.getM() ) {
             index = 0;
             ChordManager.printFingerTable();
         }
 
-        String key = ChordManager.calculateNextKey(ChordManager.peerHash, index, mBits);
+        String key = ChordManager.calculateNextKey(ChordManager.peerHash, index, ChordManager.getM() );
         ArrayList<ConnectionInfo> fingerTable = ChordManager.getFingerTable();
 
         if(index > (fingerTable.size() - 1)) {
