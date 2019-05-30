@@ -4,7 +4,6 @@ import files.FileHandler;
 import messages.LookupMessage;
 import messages.Message;
 import messages.SucessorMessage;
-import peer.FixFingers;
 import peer.Peer;
 
 import java.math.BigInteger;

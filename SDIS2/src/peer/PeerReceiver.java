@@ -1,13 +1,11 @@
 package peer;
 
-import messages.Message;
+import messages.MessageHandler;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.*;
-import java.net.UnknownHostException;
-import java.util.concurrent.TimeUnit;
 
 
 public class PeerReceiver implements Runnable {

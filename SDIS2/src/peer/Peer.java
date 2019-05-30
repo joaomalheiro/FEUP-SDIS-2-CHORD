@@ -1,7 +1,9 @@
 package peer;
 
+import chord.CheckPredecessor;
 import chord.ChordManager;
 import chord.ConnectionInfo;
+import chord.Stabilize;
 import files.FileHandler;
 import messages.LookupMessage;
 import messages.MessageForwarder;
@@ -62,8 +64,8 @@ public class Peer implements RMIStub {
             MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort()));
         }
 
-        executor.scheduleAtFixedRate(checkPredecessor, 0, 2000, TimeUnit.MILLISECONDS);
-        executor.scheduleAtFixedRate(new Stabilize(), 0, 2000, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(checkPredecessor, 0, 500, TimeUnit.MILLISECONDS);
+        executor.scheduleAtFixedRate(new Stabilize(), 0, 500, TimeUnit.MILLISECONDS);
 
         RMIStub stub;
         instance = new Peer();

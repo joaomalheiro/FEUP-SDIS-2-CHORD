@@ -1,4 +1,4 @@
-package peer;
+package messages;
 
 import messages.Message;
 
@@ -9,7 +9,7 @@ public class MessageHandler implements Runnable{
 
     Message message;
 
-    MessageHandler(Object messageObject)
+    public MessageHandler(Object messageObject)
     {
         if (messageObject != null) {
             System.out.println("Received: " + messageObject);

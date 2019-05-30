@@ -1,15 +1,5 @@
 package messages;
 
-import peer.MessageHandler;
-import peer.Peer;
-
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-
 public class MessageForwarder {
 
     public static void sendMessage(Message message){

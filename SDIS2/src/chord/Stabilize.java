@@ -1,9 +1,10 @@
-package peer;
+package chord;
 
 import chord.ChordManager;
 import chord.ConnectionInfo;
 import messages.GetPredecessorMessage;
 import messages.MessageForwarder;
+import peer.Peer;
 
 import java.net.InetAddress;
 

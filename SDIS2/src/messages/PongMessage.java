@@ -1,6 +1,6 @@
 package messages;
 
-import peer.CheckPredecessor;
+import chord.CheckPredecessor;
 import peer.Peer;
 
 public class PongMessage extends Message {

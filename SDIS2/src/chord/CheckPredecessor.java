@@ -1,9 +1,10 @@
-package peer;
+package chord;
 
 import chord.ChordManager;
 import chord.ConnectionInfo;
 import messages.MessageForwarder;
 import messages.PingMessage;
+import peer.Peer;
 
 import java.net.InetAddress;
 
@@ -11,7 +12,7 @@ public class CheckPredecessor implements Runnable{
     public static boolean dead;
     private int timeout;
 
-    CheckPredecessor(int timeout){
+    public CheckPredecessor(int timeout){
         this.timeout = timeout;
     }
 

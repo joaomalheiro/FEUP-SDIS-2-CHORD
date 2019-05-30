@@ -1,4 +1,4 @@
-package peer;
+package chord;
 
 import chord.ChordManager;
 import chord.ConnectionInfo;
@@ -6,6 +6,7 @@ import messages.LookupMessage;
 import messages.Message;
 import messages.MessageForwarder;
 import messages.SucessorMessage;
+import peer.Peer;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
