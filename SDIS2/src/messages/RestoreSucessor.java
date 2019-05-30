@@ -7,17 +7,20 @@ import peer.Peer;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
-public class RestoreMessage extends Message {
+public class RestoreSucessor extends Message {
     private ConnectionInfo ci;
+    private BigInteger originalHash;
     private BigInteger hashFile;
     private String filename;
     private String ipAddress;
     private int port;
 
-    public RestoreMessage(ConnectionInfo ci, BigInteger hashFile, String filename,String ipAddress,int port) {
+    RestoreSucessor(ConnectionInfo ci, BigInteger originalHash, BigInteger hashFile, String filename, String ipAddress, int port){
         this.ci = ci;
+        this.originalHash = originalHash;
         this.hashFile = hashFile;
         this.filename = filename;
         this.ipAddress = ipAddress;
@@ -26,10 +29,16 @@ public class RestoreMessage extends Message {
 
     @Override
     public String toString() {
-        return "RESTORE " + this.ci + " " + this.hashFile + " " + this.filename;
+        return "RESTORE-SUCESSOR: " + this.ci + " " + this.hashFile + " " + this.filename;
     }
 
-    public void handleMessage() {
+    @Override
+    public void handleMessage() throws UnknownHostException {
+
+        if(ChordManager.peerHash.compareTo(originalHash) == 0) {
+            System.out.println("Restore failed, there is no such file in the system");
+            return;
+        }
 
         if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/backup/" + hashFile)) {
             try {
@@ -44,18 +53,17 @@ public class RestoreMessage extends Message {
                 e.printStackTrace();
             }
         } else {
-            MessageForwarder.sendMessage(new RestoreSucessor(ci, ChordManager.peerHash , hashFile, filename, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort()));
+            MessageForwarder.sendMessage(new RestoreSucessor(ci, originalHash, hashFile, filename, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort()));
         }
-        //MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile), ci.getIp(), ci.getPort());
-
     }
+
     @Override
     public String getIpAddress() {
-        return this.ipAddress;
+        return ipAddress;
     }
 
     @Override
     public int getPort() {
-        return this.port;
+        return port;
     }
 }
