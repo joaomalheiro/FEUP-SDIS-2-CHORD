@@ -1,5 +1,6 @@
 package messages;
 
+import chord.ChordInfo;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import peer.Peer;
@@ -30,9 +31,9 @@ public class RestoreMessage extends Message {
 
     public void handleMessage() {
 
-        if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "/backup/" + hashFile)) {
+        if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/backup/" + hashFile)) {
             try {
-                byte[] content = FileHandler.readFromFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "/backup/" + hashFile);
+                byte[] content = FileHandler.readFromFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash  + "/backup/" + hashFile);
 
                 MessageForwarder.sendMessage(new RestoreFile(ci, hashFile, filename, content, ci.getIp(), ci.getPort()));
             } catch (IOException e) {

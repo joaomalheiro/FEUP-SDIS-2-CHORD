@@ -31,22 +31,35 @@ public class Restore implements Runnable {
             e.printStackTrace();
         }
 
-        ConnectionInfo ci = null;
-        try {
-            ci = new ConnectionInfo(hashFile, InetAddress.getLocalHost().getHostAddress(), Peer.port);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/backup/" + hashFile)){
+            try {
+                byte[] content = FileHandler.readFromFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash  + "/backup/" + hashFile);
+
+                FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/restored/" + filename, content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+
+            ConnectionInfo ci = null;
+            try {
+                ci = new ConnectionInfo(hashFile, InetAddress.getLocalHost().getHostAddress(), Peer.port);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+
+            Message res = ChordInfo.searchSuccessor2(ci);
+            if (res instanceof SucessorMessage) {
+                MessageForwarder.sendMessage(new RestoreMessage(ci, hashFile, this.filename, ((SucessorMessage) res).getCi().getIp(), ((SucessorMessage) res).getCi().getPort()));
+            } else if (res instanceof LookupMessage) {
+                MessageForwarder.sendMessage(new RestoreInitMessage(ci, hashFile, this.filename, res.getIpAddress(), res.getPort()));
+            }
+
         }
-
-        Message res = ChordInfo.searchSuccessor2(ci);
-
-        System.out.println("res - " + res.getIpAddress() + " " + res.getPort());
-
-        if(res instanceof SucessorMessage) {
-            MessageForwarder.sendMessage(new RestoreMessage(ci, hashFile, this.filename,((SucessorMessage) res).getCi().getIp(),((SucessorMessage) res).getCi().getPort()));
-        } else if(res instanceof LookupMessage){
-            MessageForwarder.sendMessage(new RestoreInitMessage(ci, hashFile,this.filename, res.getIpAddress(),res.getPort()));
-        }
-
     }
 }

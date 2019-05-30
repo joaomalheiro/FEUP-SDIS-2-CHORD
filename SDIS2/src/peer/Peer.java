@@ -89,8 +89,7 @@ public class Peer implements RMIStub {
         storage = new Storage(100);
         if (storage.getSpaceReserved() < storage.getSpaceOcupied())
             FileHandler.clearStorageSpace();
-        FileHandler.createDir("backup");
-        FileHandler.createDir("restored");
+
     }
 
     public static String getPeerAccessPoint() {

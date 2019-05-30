@@ -1,5 +1,6 @@
 package chord;
 
+import files.FileHandler;
 import messages.LookupMessage;
 import messages.Message;
 import messages.MessageForwarder;
@@ -57,6 +58,9 @@ public class ChordInfo implements Runnable{
             String hash = calculateNextKey(peerHash, i, mBytes * 8);
             fingerTable.add(new ConnectionInfo(new BigInteger(hash), InetAddress.getLocalHost().getHostAddress(), Peer.port));
         }*/
+
+        FileHandler.createDir("backup");
+        FileHandler.createDir("restored");
 
         initFingerTable();
         printFingerTable();

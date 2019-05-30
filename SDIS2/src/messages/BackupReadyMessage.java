@@ -51,7 +51,7 @@ public class BackupReadyMessage extends Message {
                 if((this.ci.getPort() == Peer.port) && (this.ci.getIp().equals(InetAddress.getLocalHost().getHostAddress()))) {
 
                     try {
-                        FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "/backup/" + hashFile, content);
+                        FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/backup/" + hashFile, content);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {

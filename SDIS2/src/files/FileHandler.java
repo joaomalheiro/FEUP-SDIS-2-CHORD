@@ -1,5 +1,6 @@
 package files;
 
+import chord.ChordInfo;
 import peer.Peer;
 
 import java.io.File;
@@ -86,7 +87,7 @@ public class FileHandler {
 
     public static void createDir(String type) {
 
-        String typeDirName = "./peerDisk/peer" + Peer.getPeerAccessPoint() + "/" + type;
+        String typeDirName = "./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash + "/" + type;
 
         Path dirPath = Paths.get(typeDirName);
 
@@ -126,7 +127,7 @@ public class FileHandler {
     }
 
     public static void clearStorageSpace() throws IOException {
-        Path rootPath = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint());
+        Path rootPath = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordInfo.peerHash);
 
         Files.walk(rootPath)
                 .sorted(Comparator.reverseOrder())

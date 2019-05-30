@@ -47,8 +47,7 @@ public class Backup implements Runnable{
         if(res instanceof SucessorMessage) {
             try {
                 byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
-
-                MessageForwarder.sendMessage(new BackupMessage(ci, hashFile, repDegree, content, res.getIpAddress(), res.getPort()));
+                MessageForwarder.sendMessage(new BackupMessage(ci, hashFile, repDegree, content, ((SucessorMessage) res).getCi().getIp(), ((SucessorMessage) res).getCi().getPort()));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
