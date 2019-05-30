@@ -1,6 +1,6 @@
 package messages;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import peer.Peer;
 
@@ -20,10 +20,10 @@ public class LookupMessage extends Message {
 
     @Override
     public void handleMessage() throws UnknownHostException {
-        if(ChordInfo.getFingerTable().get(0).getPort() == Peer.port) {
-            MessageForwarder.sendMessage(new SucessorMessage(ci.getHashedKey().toString(),new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(),Peer.port), ci.getIp(), ci.getPort()));
+        if(ChordManager.getFingerTable().get(0).getPort() == Peer.port) {
+            MessageForwarder.sendMessage(new SucessorMessage(ci.getHashedKey().toString(),new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(),Peer.port), ci.getIp(), ci.getPort()));
         } else {
-            Message message = ChordInfo.searchSuccessor2(ci);
+            Message message = ChordManager.searchSuccessor2(ci);
             MessageForwarder.sendMessage(message);
         }
     }

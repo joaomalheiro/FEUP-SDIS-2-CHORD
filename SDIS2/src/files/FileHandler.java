@@ -1,10 +1,13 @@
 package files;
 
-import chord.ChordInfo;
+
 import chord.ConnectionInfo;
 import messages.BackupMessage;
-import messages.Message;
+
 import messages.MessageForwarder;
+
+import chord.ChordManager;
+
 import peer.Peer;
 
 import java.io.File;
@@ -23,8 +26,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
 
 public class FileHandler {
 
@@ -94,7 +97,7 @@ public class FileHandler {
 
     public static void createDir(String type) {
 
-        String typeDirName = "./peerDisk/peer" + Peer.getPeerAccessPoint() + "/" + type;
+        String typeDirName = "./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/" + type;
 
         Path dirPath = Paths.get(typeDirName);
 
@@ -134,7 +137,7 @@ public class FileHandler {
     }
 
     public static void clearStorageSpace() throws IOException {
-        Path rootPath = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint());
+        Path rootPath = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash);
 
         final List<Path> pathsToDelete = Files.walk(rootPath).sorted(Comparator.reverseOrder()).collect(Collectors.toList());
         for(Path path : pathsToDelete) {
@@ -148,7 +151,7 @@ public class FileHandler {
 
     private static void handleDeleteFile(Path path) throws IOException {
         byte[] content = Files.readAllBytes(path);
-        BackupMessage saveMessage = new BackupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content, ChordInfo.getFingerTable().get(0).getIp(), ChordInfo.getFingerTable().get(0).getPort());
+        BackupMessage saveMessage = new BackupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort());
         MessageForwarder.sendMessage(saveMessage);
     }
 

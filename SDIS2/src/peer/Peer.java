@@ -1,10 +1,9 @@
 package peer;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import messages.LookupMessage;
-import messages.Message;
 import messages.MessageForwarder;
 import protocols.Backup;
 import protocols.Restore;
@@ -16,7 +15,6 @@ import java.net.UnknownHostException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -50,11 +48,11 @@ public class Peer implements RMIStub {
 
         executor = Executors.newScheduledThreadPool(100);
 
-        ChordInfo ci = new ChordInfo();
+        ChordManager ci = new ChordManager();
         executor.submit(ci);
 
         if (connectionInfo.getPort() != 0) {
-            MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort()));
+            MessageForwarder.sendMessage(new LookupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), Peer.connectionInfo.getIp(), Peer.connectionInfo.getPort()));
         }
         executor.scheduleAtFixedRate(checkPredecessor, 0, 2000, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(new Stabilize(), 0, 2000, TimeUnit.MILLISECONDS);
@@ -89,8 +87,7 @@ public class Peer implements RMIStub {
         storage = new Storage(10000);
         if (storage.getSpaceReserved() < storage.getSpaceOcupied())
             FileHandler.clearStorageSpace();
-        FileHandler.createDir("backup");
-        FileHandler.createDir("restored");
+
     }
 
     public static String getPeerAccessPoint() {

@@ -1,6 +1,6 @@
 package messages;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 
 import java.math.BigInteger;
@@ -29,9 +29,11 @@ public class RestoreInitMessage extends Message {
     @Override
     public void handleMessage() throws UnknownHostException {
 
-        Message res = ChordInfo.searchSuccessor2(ci);
+        Message res = ChordManager.searchSuccessor2(ci);
+
+        System.out.println(" " + res.getIpAddress() + " " + res.getPort());
         if(res instanceof SucessorMessage) {
-            MessageForwarder.sendMessage(new RestoreMessage(ci,this.hashFile, this.filename,res.getIpAddress(),res.getPort()));
+            MessageForwarder.sendMessage(new RestoreMessage(ci,this.hashFile, this.filename,((SucessorMessage) res).getCi().getIp(),((SucessorMessage) res).getCi().getPort()));
         } else if(res instanceof LookupMessage){
             MessageForwarder.sendMessage(new RestoreInitMessage(ci,this.hashFile,this.filename, res.getIpAddress(),res.getPort()));
         }

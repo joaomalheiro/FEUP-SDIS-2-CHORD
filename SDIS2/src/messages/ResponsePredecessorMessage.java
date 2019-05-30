@@ -1,13 +1,11 @@
 package messages;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import peer.Peer;
 
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.rmi.RemoteException;
 
 public class ResponsePredecessorMessage extends Message {
     private ConnectionInfo ci;
@@ -23,10 +21,10 @@ public class ResponsePredecessorMessage extends Message {
     public void handleMessage() throws UnknownHostException {
         if(ci.getHashedKey() == null){
             System.out.println("RECEIVED NULL");
-        } else if(ChordInfo.numberInInterval(ChordInfo.peerHash,ChordInfo.getFingerTable().get(0).getHashedKey(),ci.getHashedKey())) {
-            ChordInfo.getFingerTable().set(0, new ConnectionInfo(ci.getHashedKey(), ci.getIp(), ci.getPort()));
+        } else if(ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(),ci.getHashedKey())) {
+            ChordManager.getFingerTable().set(0, new ConnectionInfo(ci.getHashedKey(), ci.getIp(), ci.getPort()));
         }
-        MessageForwarder.sendMessage(new PredecessorMessage(new ConnectionInfo(ChordInfo.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), ci.getIp(), ci.getPort()));
+        MessageForwarder.sendMessage(new PredecessorMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), ci.getIp(), ci.getPort()));
 
     }
 

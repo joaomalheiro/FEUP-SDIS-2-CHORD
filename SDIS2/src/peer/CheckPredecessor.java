@@ -1,8 +1,7 @@
 package peer;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
-import messages.Message;
 import messages.MessageForwarder;
 import messages.PingMessage;
 
@@ -19,15 +18,15 @@ public class CheckPredecessor implements Runnable{
     @Override
     public void run(){
         synchronized(this){
-            if (ChordInfo.predecessor != null) {
+            if (ChordManager.predecessor != null) {
                 try {
-                    MessageForwarder.sendMessage(new PingMessage(new ConnectionInfo(null, InetAddress.getLocalHost().getHostAddress(), Peer.port),ChordInfo.predecessor.getIp(), ChordInfo.predecessor.getPort()));
+                    MessageForwarder.sendMessage(new PingMessage(new ConnectionInfo(null, InetAddress.getLocalHost().getHostAddress(), Peer.port), ChordManager.predecessor.getIp(), ChordManager.predecessor.getPort()));
                     this.wait(timeout);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 if (dead) {
-                    ChordInfo.predecessor = null;
+                    ChordManager.predecessor = null;
                 }
             }
         }

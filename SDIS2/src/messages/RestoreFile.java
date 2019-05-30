@@ -1,5 +1,6 @@
 package messages;
 
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import peer.Peer;
@@ -30,7 +31,7 @@ public class RestoreFile extends Message {
     public void handleMessage() throws UnknownHostException {
 
         try {
-            FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "/restored/" + filename, body);
+            FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/restored/" + filename, body);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {

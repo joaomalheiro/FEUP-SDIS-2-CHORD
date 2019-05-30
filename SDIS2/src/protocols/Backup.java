@@ -1,18 +1,15 @@
 package protocols;
 
-import chord.ChordInfo;
+import chord.ChordManager;
 import chord.ConnectionInfo;
 import files.FileHandler;
 import messages.*;
 import peer.Peer;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 
@@ -42,13 +39,12 @@ public class Backup implements Runnable{
             e.printStackTrace();
         }
 
-        Message res = ChordInfo.searchSuccessor2(ci);
+        Message res = ChordManager.searchSuccessor2(ci);
 
         if(res instanceof SucessorMessage) {
             try {
                 byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
-
-                MessageForwarder.sendMessage(new BackupMessage(ci, hashFile, repDegree, content, res.getIpAddress(), res.getPort()));
+                MessageForwarder.sendMessage(new BackupMessage(ci, hashFile, repDegree, content, ((SucessorMessage) res).getCi().getIp(), ((SucessorMessage) res).getCi().getPort()));
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ExecutionException e) {
