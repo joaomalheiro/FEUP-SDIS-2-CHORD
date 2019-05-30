@@ -43,31 +43,33 @@ public class BackupReadyMessage extends Message {
 
     public void handleMessage() {
 
-            try {
-                byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
+        try {
+            byte[] content = FileHandler.readFromFile("./testFiles/" + filename);
 
-                if((this.ci.getPort() == Peer.port) && (this.ci.getIp().equals(InetAddress.getLocalHost().getHostAddress()))) {
+            if ((this.ci.getPort() == Peer.port) && (this.ci.getIp().equals(InetAddress.getLocalHost().getHostAddress()))) {
 
-                    try {
-                        FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/backup/" + hashFile, content);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        e.printStackTrace();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    FileHandler.writeFile("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash + "/backup/" + hashFile, content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
 
-                String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
-                BigInteger fileHash = ChordManager.encrypt(params);
+                if(repDegree - 1 > 0)
+                    MessageForwarder.sendMessage(new BackupMessage(ci, hashFile, repDegree - 1, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort()));
+                MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile, this.repDegree, ci.getIp(), ci.getPort()));
+            } else {
 
-                MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), fileHash, repDegree, content, ci.getIp(), ci.getPort()));
-            } catch (IOException e) {
+                MessageForwarder.sendMessage(new BackupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), hashFile, repDegree, content, ci.getIp(), ci.getPort()));
+            }
+        } catch(IOException e){
                 e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch(ExecutionException e){
                 e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch(InterruptedException e){
                 e.printStackTrace();
             }
     }

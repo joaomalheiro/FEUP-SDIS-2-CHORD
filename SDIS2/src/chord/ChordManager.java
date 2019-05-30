@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class ChordManager implements Runnable{
-    private final static int M = 8; //bits
+    private final static int M = 32; //bits
     public static BigInteger peerHash;
     private static ArrayList<ConnectionInfo> fingerTable = new ArrayList<>(M);
     public static ConnectionInfo predecessor = null;
