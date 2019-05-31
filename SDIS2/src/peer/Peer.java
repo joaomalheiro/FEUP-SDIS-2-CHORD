@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 
 public class Peer implements RMIStub {
     private static String peerAccessPoint;
-    private static String protocolVersion;
     public static int port;
     public static ConnectionInfo connectionInfo;
     public static final CheckPredecessor checkPredecessor = new CheckPredecessor(500);
@@ -43,7 +42,7 @@ public class Peer implements RMIStub {
     public static ScheduledExecutorService executor;
 
     public static void main(String args[]) throws IOException {
-        if (args.length < 3 || args.length > 5)
+        if (args.length < 2 || args.length > 4)
             return;
 
         initAtributes(args);
@@ -84,15 +83,14 @@ public class Peer implements RMIStub {
     }
 
     private static void initAtributes(String[] args) throws IOException {
-        protocolVersion = args[0];
-        peerAccessPoint = args[1];
-        port = Integer.parseInt(args[2]);
+        peerAccessPoint = args[0];
+        port = Integer.parseInt(args[1]);
 
-        if (args.length == 4) {
+        if (args.length == 3) {
+            connectionInfo.setPort(Integer.parseInt(args[2]));
+        } else if (args.length == 4) {
+            connectionInfo.setIp(args[2]);
             connectionInfo.setPort(Integer.parseInt(args[3]));
-        } else if (args.length == 5) {
-            connectionInfo.setIp(args[3]);
-            connectionInfo.setPort(Integer.parseInt(args[4]));
         }
 
 
