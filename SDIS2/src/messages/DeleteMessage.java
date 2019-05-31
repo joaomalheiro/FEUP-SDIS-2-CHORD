@@ -24,8 +24,9 @@ public class DeleteMessage extends Message {
     }
     @Override
     public void handleMessage() throws IOException {
-        if(FileHandler.checkFileExists(hashfile.toString())){
-            Files.deleteIfExists(Paths.get(hashfile.toString()));
+        System.out.println("RECEIVED DELETE FOR " + hashfile);
+        if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile)){
+            Files.deleteIfExists(Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile));
         }
 
         if(!ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(), hashfile)){
@@ -38,7 +39,14 @@ public class DeleteMessage extends Message {
 
         }
     }
+   
+    @Override
+    public String toString() {
 
+        String returnString =  "DELETE " + hashfile;
+
+        return returnString;
+    }
     @Override
     public String getIpAddress() {
         return ipAddress;

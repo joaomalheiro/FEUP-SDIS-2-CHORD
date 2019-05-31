@@ -20,23 +20,28 @@ public class Delete implements Runnable{
 
     public Delete(String filename) {
 
-            String [] params = new String[] {filename};
-            //TODO: NÃO DEVIA ESTAR A DAR ENCRYPT COM O LASTMODIFIED?
+            try {
+            String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
             this.hashfile = ChordManager.encrypt(params);
+            //hashFile = FileHandler.encrypt(filename);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void run() {
         System.out.println("DELETING " + hashfile);
-        if(FileHandler.checkFileExists(hashfile.toString())){
+        if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile)){
             try {
-                Files.deleteIfExists(Paths.get(hashfile.toString()));
+                Files.deleteIfExists(Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
-        if(!ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(), hashfile)){
+        //if(!ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(), hashfile)){
             Message res = ChordManager.searchSuccessor2(new ConnectionInfo(hashfile,null,0));
             if(res instanceof SucessorMessage){
                 MessageForwarder.sendMessage(new DeleteMessage(hashfile,ChordManager.getFingerTable().get(0).getIp(),ChordManager.getFingerTable().get(0).getPort()));
@@ -44,6 +49,6 @@ public class Delete implements Runnable{
                 MessageForwarder.sendMessage(new DeleteMessage(hashfile,res.getIpAddress(),res.getPort()));
             }
 
-        }
+        //}
     }
 }
