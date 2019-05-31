@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import chord.ChordManager;
 import chord.ConnectionInfo;
 import messages.BackupMessage;
+import messages.ReclaimBackup;
 import messages.MessageForwarder;
 
 public class DeleteHandler implements Runnable{
@@ -30,7 +31,7 @@ public class DeleteHandler implements Runnable{
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			BackupMessage message = new BackupMessage(ci, hashfile, repDegree, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort());
+			ReclaimBackup message = new ReclaimBackup(ci, hashfile, repDegree, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort());
 			MessageForwarder.sendMessage(message);
 	}
 
