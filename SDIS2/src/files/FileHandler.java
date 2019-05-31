@@ -116,8 +116,13 @@ public class FileHandler {
         for(Path path : pathsToDelete) {
             if(Peer.storage.getSpaceReserved() < Peer.storage.getSpaceOcupied()) {
             	if(Files.isRegularFile(path)){
+                    System.out.println("\n \n \n \n" + path);
+                    if(Files.exists(path)){
+                        if(!Files.isDirectory(path))
+                
             		handleDeleteFile(path);
                     Files.deleteIfExists(path);
+                    }
             	}
             }
         }
@@ -126,8 +131,15 @@ public class FileHandler {
 
     private static void handleDeleteFile(Path path) throws IOException {
         byte[] content = Files.readAllBytes(path);
-        DeleteHandler handler = new DeleteHandler(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content);
-        Peer.executor.submit(handler);
+        long filename; 
+        try {
+           filename = Long.parseLong(path.getFileName().toString());
+           DeleteHandler handler = new DeleteHandler(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content);
+            Peer.executor.submit(handler);
+        } catch(Exception e) {
+
+        }
+        
     }
 
 
