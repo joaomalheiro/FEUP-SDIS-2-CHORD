@@ -36,5 +36,5 @@ public interface RMIStub extends Remote {
      * @param reservedSpace reserved space
      * @throws RemoteException  exception
      */
-    void reclaimProtocol(long reservedSpace) throws RemoteException;
+    void reclaimProtocol(int reservedSpace) throws RemoteException;
 }

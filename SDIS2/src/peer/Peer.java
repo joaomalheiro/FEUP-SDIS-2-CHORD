@@ -133,7 +133,7 @@ public class Peer implements RMIStub {
     }
 
     @Override
-    public void reclaimProtocol(long reservedSpace) {
+    public void reclaimProtocol(int reservedSpace) {
         Reclaim reclaim = new Reclaim(reservedSpace);
         reclaim.run();
     }

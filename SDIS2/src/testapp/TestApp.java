@@ -46,15 +46,7 @@ public class TestApp {
                 break;
             case "RECLAIM":
                 operand1 = args[2];
-                try {
-                    aux = Long.parseLong(operand1);
-                    if(aux < 0)
-                        throw new Exception("allowed space is negative");
-                } catch (Exception e) {
-                    System.err.println("allowed space must be a positive integer");
-                    System.exit(-1);
-                }
-                stub.reclaimProtocol(aux);
+                stub.reclaimProtocol(Integer.parseInt(operand1));
                 break;
         }
     }
