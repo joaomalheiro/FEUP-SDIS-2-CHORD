@@ -84,15 +84,29 @@ public class Peer implements RMIStub {
 
     private static void initAtributes(String[] args) throws IOException {
         peerAccessPoint = args[0];
-        port = Integer.parseInt(args[1]);
-
-        if (args.length == 3) {
-            connectionInfo.setPort(Integer.parseInt(args[2]));
-        } else if (args.length == 4) {
-            connectionInfo.setIp(args[2]);
-            connectionInfo.setPort(Integer.parseInt(args[3]));
+        try {
+            port = Integer.parseInt(args[1]);
+        } catch (NumberFormatException e) {
+            System.err.println("port must be an integer value");
+            System.exit(-1);
         }
 
+        if (args.length == 3) {
+            try{
+                connectionInfo.setPort(Integer.parseInt(args[2]));
+            } catch(NumberFormatException e){
+                System.err.println("connecter's port must be an integer value");
+                System.exit(-1);
+            }
+        } else if (args.length == 4) {
+            connectionInfo.setIp(args[2]);
+            try{
+                connectionInfo.setPort(Integer.parseInt(args[3]));
+            } catch(NumberFormatException e){
+                System.err.println("connecter's port must be an integer value");
+                System.exit(-1);
+            }
+        }
 
     }
 
