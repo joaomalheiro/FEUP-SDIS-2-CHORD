@@ -20,8 +20,14 @@ public class Delete implements Runnable{
 
     public Delete(String filename) {
 
+            try {
             String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
             this.hashfile = ChordManager.encrypt(params);
+            //hashFile = FileHandler.encrypt(filename);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
