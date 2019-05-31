@@ -33,9 +33,9 @@ public class Delete implements Runnable{
     @Override
     public void run() {
         System.out.println("DELETING " + hashfile);
-        if(FileHandler.checkFileExists(hashfile.toString())){
+        if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile)){
             try {
-                Files.deleteIfExists(Paths.get(hashfile.toString()));
+                Files.deleteIfExists(Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile));
             } catch (IOException e) {
                 e.printStackTrace();
             }
