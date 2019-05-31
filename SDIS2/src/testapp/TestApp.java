@@ -14,7 +14,9 @@ public class TestApp {
         String peerAcessPoint = args[0];
         String protocol = args[1];
 
-        String operand1 = null, operand2;
+        String operand1 = null;
+        int operand2 = 1;
+        int aux = 100;
 
         Registry registry = LocateRegistry.getRegistry("localhost");
         RMIStub stub = (RMIStub) registry.lookup(peerAcessPoint);
@@ -24,8 +26,15 @@ public class TestApp {
         switch (protocol){
             case "BACKUP":
                 operand1 = args[2];
-                operand2 = args[3];
-                stub.backupProtocol(operand1, Integer.parseInt(operand2));
+                try {
+                    operand2 = Integer.parseInt(args[3]);
+                    if(operand2 <= 0 || operand2 >= 10)
+                        throw new Exception("rd amount");
+                } catch (Exception e) {
+                    System.err.println("rd must be an integer from 1 to 9");
+                    System.exit(-1);
+                }
+                stub.backupProtocol(operand1, operand2);
                 break;
             case "RESTORE":
                 operand1 = args[2];
@@ -37,7 +46,15 @@ public class TestApp {
                 break;
             case "RECLAIM":
                 operand1 = args[2];
-                stub.reclaimProtocol(Integer.parseInt(operand1));
+                try {
+                    aux = Integer.parseInt(operand1);
+                    if(aux < 0)
+                        throw new Exception("allowed space is negative");
+                } catch (Exception e) {
+                    System.err.println("allowed space must be a positive integer");
+                    System.exit(-1);
+                }
+                stub.reclaimProtocol(aux);
                 break;
             case "STATE":
                 System.out.println(stub.stateProtocol());
