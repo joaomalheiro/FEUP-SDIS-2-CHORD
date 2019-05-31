@@ -29,7 +29,7 @@ public class DeleteMessage extends Message {
             Files.deleteIfExists(Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile));
         }
 
-        if(!ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(), hashfile)){
+        //if(!ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(), hashfile)){
             Message res = ChordManager.searchSuccessor2(new ConnectionInfo(hashfile,null,0));
             if(res instanceof SucessorMessage){
                 MessageForwarder.sendMessage(new DeleteMessage(hashfile,ChordManager.getFingerTable().get(0).getIp(),ChordManager.getFingerTable().get(0).getPort()));
@@ -37,7 +37,7 @@ public class DeleteMessage extends Message {
                 MessageForwarder.sendMessage(new DeleteMessage(hashfile,res.getIpAddress(),res.getPort()));
             }
 
-        }
+        //}
     }
    
     @Override
