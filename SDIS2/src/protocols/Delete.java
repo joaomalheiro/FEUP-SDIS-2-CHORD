@@ -20,8 +20,7 @@ public class Delete implements Runnable{
 
     public Delete(String filename) {
 
-            String [] params = new String[] {filename};
-            //TODO: NÃO DEVIA ESTAR A DAR ENCRYPT COM O LASTMODIFIED?
+            String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
             this.hashfile = ChordManager.encrypt(params);
     }
 
