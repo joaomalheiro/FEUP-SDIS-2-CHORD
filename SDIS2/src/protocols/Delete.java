@@ -41,7 +41,7 @@ public class Delete implements Runnable{
             }
         }
 
-        if(!ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(), hashfile)){
+        //if(!ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(), hashfile)){
             Message res = ChordManager.searchSuccessor2(new ConnectionInfo(hashfile,null,0));
             if(res instanceof SucessorMessage){
                 MessageForwarder.sendMessage(new DeleteMessage(hashfile,ChordManager.getFingerTable().get(0).getIp(),ChordManager.getFingerTable().get(0).getPort()));
@@ -49,6 +49,6 @@ public class Delete implements Runnable{
                 MessageForwarder.sendMessage(new DeleteMessage(hashfile,res.getIpAddress(),res.getPort()));
             }
 
-        }
+        //}
     }
 }
