@@ -43,7 +43,7 @@ public class ChordManager implements Runnable{
      * Calls functions to create hash and fill finger table
      */
     private void setChord() throws UnknownHostException {
-        String [] params = new String[] {String.valueOf(Peer.port)};
+        String [] params = new String[] {String.valueOf(Peer.port), InetAddress.getLocalHost().getHostAddress()};
         ChordManager.peerHash = encrypt(params);
         System.out.println("peer.Peer hash = " + peerHash + "\n");
 

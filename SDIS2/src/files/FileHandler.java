@@ -88,7 +88,7 @@ public class FileHandler {
 
     }
 
-    public static String getLastModified(String filename) throws IOException {
+    public static String getFileSize(String filename) throws IOException {
 
         Path path = Paths.get("./testFiles/" + filename);
 
@@ -126,7 +126,7 @@ public class FileHandler {
 
         BigInteger slot = null;
         try {
-            String hashString = filename + getLastModified(filename);
+            String hashString = filename + getFileSize(filename);
             slot = new BigInteger(1, digest.digest(hashString.getBytes(StandardCharsets.UTF_8)));
         } catch (IOException e) {
             e.printStackTrace();

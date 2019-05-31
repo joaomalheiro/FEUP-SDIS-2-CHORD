@@ -28,7 +28,7 @@ public class Backup implements Runnable{
 
         BigInteger hashFile = null;
         try {
-            String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
+            String [] params = new String[] {filename, FileHandler.getFileSize(filename)};
             hashFile = ChordManager.encrypt(params);
             //hashFile = FileHandler.encrypt(filename);
         } catch (Exception e) {

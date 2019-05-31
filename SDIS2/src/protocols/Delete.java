@@ -21,7 +21,7 @@ public class Delete implements Runnable{
     public Delete(String filename) {
 
             try {
-            String [] params = new String[] {filename, FileHandler.getLastModified(filename)};
+            String [] params = new String[] {filename, FileHandler.getFileSize(filename)};
             this.hashfile = ChordManager.encrypt(params);
             //hashFile = FileHandler.encrypt(filename);
         } catch (Exception e) {
