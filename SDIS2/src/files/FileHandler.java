@@ -39,13 +39,10 @@ public class FileHandler {
 
         int fileSize = (int) new File(filename).length();
 
-        System.out.println(fileSize);
-
         ByteBuffer buffer = ByteBuffer.allocate(fileSize);
 
         Future<Integer> operation = fileChannel.read(buffer, 0);
 
-        // run other code as operation continues in background
         operation.get();
 
         buffer.rewind();
@@ -73,7 +70,6 @@ public class FileHandler {
         AsynchronousFileChannel fileChannel = AsynchronousFileChannel.open(path, StandardOpenOption.WRITE);
 
         int fileSize = fileContent.length;
-        System.out.println(fileSize);
 
         ByteBuffer buffer = ByteBuffer.allocate(fileSize);
 
@@ -83,7 +79,6 @@ public class FileHandler {
         Future<Integer> operation = fileChannel.write(buffer, 0);
         buffer.clear();
 
-        //run other code as operation continues in background
         operation.get();
 
     }
@@ -114,28 +109,6 @@ public class FileHandler {
         }
     }
 
-    /**
-     * Encrypts a string(text) that is the filename and returns the new hashed fileId
-     *
-     * @param filename
-     * @return String
-     */
-    /*public static BigInteger encrypt(String filename) throws NoSuchAlgorithmException {
-
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-
-        BigInteger slot = null;
-        try {
-            String hashString = filename + getFileSize(filename);
-            slot = new BigInteger(1, digest.digest(hashString.getBytes(StandardCharsets.UTF_8)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int n = (int) Math.pow(2, 8);
-
-        return slot.mod(new BigInteger("" + n));
-    }*/
-
     public static void clearStorageSpace() throws IOException {
         Path rootPath = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash);
 
@@ -153,14 +126,11 @@ public class FileHandler {
 
     private static void handleDeleteFile(Path path) throws IOException {
         byte[] content = Files.readAllBytes(path);
-        //BackupMessage saveMessage = new BackupMessage(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort());
-        //MessageForwarder.sendMessage(saveMessage);
         DeleteHandler handler = new DeleteHandler(new ConnectionInfo(ChordManager.peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port), new BigInteger(path.getFileName().toString()), 1, content);
         Peer.executor.submit(handler);
     }
 
 
-    // FUNCION COPIED FROM https://stackoverflow.com/questions/7255592/get-file-directory-size-using-java-7-new-io
     public static long getSize(Path startPath) throws IOException {
         final AtomicLong size = new AtomicLong(0);
 
@@ -175,8 +145,6 @@ public class FileHandler {
             @Override
             public FileVisitResult visitFileFailed(Path file, IOException exc)
                     throws IOException {
-                // Skip folders that can't be traversed
-                System.out.println("skipped: " + file + "e=" + exc);
                 return FileVisitResult.CONTINUE;
             }
         });

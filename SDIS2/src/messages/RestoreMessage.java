@@ -46,8 +46,6 @@ public class RestoreMessage extends Message {
         } else {
             MessageForwarder.sendMessage(new RestoreSucessor(ci, ChordManager.peerHash , hashFile, filename, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort()));
         }
-        //MessageForwarder.sendMessage(new BackupCompleteMessage(this.hashFile), ci.getIp(), ci.getPort());
-
     }
     @Override
     public String getIpAddress() {

@@ -33,8 +33,7 @@ public class SendMessage implements Runnable{
             ObjectOutputStream outToServer = new ObjectOutputStream(clientSocket.getOutputStream());
             outToServer.writeObject(message);
         } catch (Exception e) {
-            //e.printStackTrace();
-            System.out.println("error");
+            System.out.println("User disconnected");
         }
     }
 }

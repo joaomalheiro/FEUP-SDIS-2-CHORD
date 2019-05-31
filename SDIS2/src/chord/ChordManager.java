@@ -45,7 +45,7 @@ public class ChordManager implements Runnable{
     private void setChord() throws UnknownHostException {
         String [] params = new String[] {String.valueOf(Peer.port), InetAddress.getLocalHost().getHostAddress()};
         ChordManager.peerHash = encrypt(params);
-        System.out.println("peer.Peer hash = " + peerHash + "\n");
+        System.out.println("Peer hash = " + peerHash + "\n");
 
         FileHandler.createDir("backup");
         FileHandler.createDir("restored");
@@ -58,17 +58,11 @@ public class ChordManager implements Runnable{
     }
 
     private void initFingerTable() throws UnknownHostException {
-        //for(int i = 0; i < mBytes * 8; i++) {
-            fingerTable.add(new ConnectionInfo(peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port));
-        //}
+        fingerTable.add(new ConnectionInfo(peerHash, InetAddress.getLocalHost().getHostAddress(), Peer.port));
     }
 
     public static void printFingerTable() {
         System.out.println("FingerTable");
-
-        /*for(ConnectionInfo finger : fingerTable){
-            System.out.println(finger.getHashedKey() + " : " + finger.getIp() + " : " + finger.getPort());
-        }*/
 
         for (int i = 0; i < fingerTable.size(); i++)
         {
@@ -116,8 +110,6 @@ public class ChordManager implements Runnable{
                 originalString += " ";
         }
 
-        System.out.println(originalString);
-
         md.update(originalString.getBytes());
         byte[] hashBytes = md.digest();
 
@@ -141,11 +133,6 @@ public class ChordManager implements Runnable{
      */
     public static String calculateNextKey(BigInteger hash, int index, int m)
     {
-        //Exemplo
-        // hash = 10, index = 0, m = 7 => 10 + 2^0 = 11
-        // hash = 10, index = 3, m = 7 => 10 + 2^3 = 18
-        // hash = 125, index = 3, m = 7 => 125 + 2^3 = 133 mod 2^7 = 8
-
         BigInteger add = new BigInteger(String.valueOf((int) Math.pow(2, index)));
         BigInteger mod =  new BigInteger(String.valueOf((int) Math.pow(2, m)));
 
@@ -207,16 +194,6 @@ public class ChordManager implements Runnable{
         return result;
     }
 
-    /*
-    public static void setSuccessor(String key)
-    {
-        if(fingerTable.size() == 0) {
-            fingerTable.add(key);
-        }
-
-        fingerTable.set(0,key);
-    }
-*/
     @Override
     public void run() {
 

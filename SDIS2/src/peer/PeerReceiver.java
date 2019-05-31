@@ -53,7 +53,6 @@ public class PeerReceiver implements Runnable {
         Object messageObject = null;
         SSLSocket connectionSocket = null;
 
-        //Ciclo infinito para receber mensagens no serverSocket
         while(true) {
 
             try {

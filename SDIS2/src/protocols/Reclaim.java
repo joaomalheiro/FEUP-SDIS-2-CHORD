@@ -23,7 +23,6 @@ public class Reclaim implements Runnable{
     @Override
     public void run() {
         try {
-            System.out.println(this.reservedSpace);
             Peer.storage.setSpaceReserved(this.reservedSpace);
         } catch (IOException e) {
             e.printStackTrace();

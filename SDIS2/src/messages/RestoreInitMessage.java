@@ -31,7 +31,6 @@ public class RestoreInitMessage extends Message {
 
         Message res = ChordManager.searchSuccessor2(ci);
 
-        System.out.println(" " + res.getIpAddress() + " " + res.getPort());
         if(res instanceof SucessorMessage) {
             MessageForwarder.sendMessage(new RestoreMessage(ci,this.hashFile, this.filename,((SucessorMessage) res).getCi().getIp(),((SucessorMessage) res).getCi().getPort()));
         } else if(res instanceof LookupMessage){

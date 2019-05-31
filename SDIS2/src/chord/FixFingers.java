@@ -43,21 +43,14 @@ public class FixFingers implements Runnable {
             e.printStackTrace();
         }
 
-        //System.out.println("Key = " + key);
-        //System.out.println(res);
-
         if(res != null){
-            System.out.println(res);
             if(res instanceof SucessorMessage) {
                 fingerTable.set(index, ((SucessorMessage) res).getCi());
             }
             else if (res instanceof LookupMessage)
             {
-                System.out.println("Entrou if");
                 MessageForwarder.sendMessage(res);
             }
         }
-
-        //ChordManager.printFingerTable();
     }
 }

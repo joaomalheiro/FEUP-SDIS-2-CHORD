@@ -20,7 +20,6 @@ public class ResponsePredecessorMessage extends Message {
     @Override
     public void handleMessage() throws UnknownHostException {
         if(ci.getHashedKey() == null){
-            System.out.println("RECEIVED NULL");
         } else if(ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(),ci.getHashedKey())) {
             ChordManager.getFingerTable().set(0, new ConnectionInfo(ci.getHashedKey(), ci.getIp(), ci.getPort()));
         }

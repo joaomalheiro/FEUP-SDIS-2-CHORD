@@ -11,7 +11,6 @@ import java.net.InetAddress;
 public class Stabilize implements Runnable {
     @Override
     public void run() {
-    	//ChordManager.printFingerTable();
             try {
                 if(ChordManager.getFingerTable().get(0).getPort() == Peer.port && ChordManager.predecessor != null){
                     ChordManager.getFingerTable().set(0, ChordManager.predecessor);

@@ -18,10 +18,7 @@ public class Storage {
     public Storage(long spaceReserved) throws IOException {
         this.spaceReserved = spaceReserved;
         updateSpaceOcupied();
-        /*if (this.spaceReserved < this.spaceOcupied) {
-            FileHandler.clearStorageSpace();
-        }*/
-
+        
         fileStored = new Hashtable<>();
     }
 
@@ -40,7 +37,6 @@ public class Storage {
     public void updateSpaceOcupied() throws IOException {
         Path pathPeerFolder = Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-" + ChordManager.peerHash);
         this.spaceOcupied = FileHandler.getSize(pathPeerFolder) / 1024;
-        System.out.println("SPACE OCUPPIED: " + this.spaceOcupied);
     }
 
 

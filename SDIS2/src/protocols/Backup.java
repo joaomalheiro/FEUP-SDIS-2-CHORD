@@ -30,7 +30,6 @@ public class Backup implements Runnable{
         try {
             String [] params = new String[] {filename, FileHandler.getFileSize(filename)};
             hashFile = ChordManager.encrypt(params);
-            //hashFile = FileHandler.encrypt(filename);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -56,10 +56,6 @@ public class TestApp {
                 }
                 stub.reclaimProtocol(aux);
                 break;
-            case "STATE":
-                System.out.println(stub.stateProtocol());
-                break;
-
         }
     }
 

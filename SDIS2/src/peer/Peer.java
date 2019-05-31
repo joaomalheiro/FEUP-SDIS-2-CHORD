@@ -137,9 +137,4 @@ public class Peer implements RMIStub {
         Reclaim reclaim = new Reclaim(reservedSpace);
         reclaim.run();
     }
-
-    @Override
-    public String stateProtocol() {
-        return null;
-    }
 }

@@ -26,9 +26,7 @@ public class DeleteMessage extends Message {
     }
     @Override
     public void handleMessage() throws IOException {
-        System.out.println("RECEIVED DELETE FOR " + hashfile);
         if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile)){
-            System.out.println("Apagou");
             Files.deleteIfExists(Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile));
         }
 

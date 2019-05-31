@@ -42,7 +42,6 @@ public class ReclaimBackup extends Message {
     }
 
     public void handleMessage() {
-        System.out.println(Peer.storage.getSpaceOcupied() + "  " + body.length);
         if (Peer.storage.getSpaceOcupied() + body.length > Peer.storage.getSpaceReserved()) {
             System.out.println("Not enough space to save file");
             MessageForwarder.sendMessage(new ReclaimBackup(ci, hashFile, repDegree, body, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort()));
