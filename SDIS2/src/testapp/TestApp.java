@@ -16,7 +16,7 @@ public class TestApp {
 
         String operand1 = null;
         int operand2 = 1;
-        int aux = 100;
+        long aux = 100;
 
         Registry registry = LocateRegistry.getRegistry("localhost");
         RMIStub stub = (RMIStub) registry.lookup(peerAcessPoint);
@@ -47,7 +47,7 @@ public class TestApp {
             case "RECLAIM":
                 operand1 = args[2];
                 try {
-                    aux = Integer.parseInt(operand1);
+                    aux = Long.parseLong(operand1);
                     if(aux < 0)
                         throw new Exception("allowed space is negative");
                 } catch (Exception e) {

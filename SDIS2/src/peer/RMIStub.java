@@ -36,5 +36,14 @@ public interface RMIStub extends Remote {
      * @param reservedSpace reserved space
      * @throws RemoteException  exception
      */
-    void reclaimProtocol(int reservedSpace) throws RemoteException;
+    void reclaimProtocol(long reservedSpace) throws RemoteException;
+
+    /**
+     * Interface method to call the State Protocol class
+     * @return state
+     * @throws RemoteException  exception
+     */
+    String stateProtocol() throws RemoteException;
+
+
 }
