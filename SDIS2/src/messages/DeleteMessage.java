@@ -28,19 +28,12 @@ public class DeleteMessage extends Message {
     public void handleMessage() throws IOException {
         System.out.println("RECEIVED DELETE FOR " + hashfile);
         if(FileHandler.checkFileExists("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile)){
+            System.out.println("Apagou");
             Files.deleteIfExists(Paths.get("./peerDisk/peer" + Peer.getPeerAccessPoint() + "-"  + ChordManager.peerHash + "/backup/" + hashfile));
         }
 
-        //if(!ChordManager.numberInInterval(ChordManager.peerHash, ChordManager.getFingerTable().get(0).getHashedKey(), hashfile)){
-            //Message res = ChordManager.searchSuccessor2(new ConnectionInfo(hashfile,null,0));
-            //if(res instanceof SucessorMessage){
-        if(ChordManager.peerHash != originalSender)
+        if(ChordManager.peerHash.compareTo(originalSender) != 0)
                 MessageForwarder.sendMessage(new DeleteMessage(hashfile,originalSender,ChordManager.getFingerTable().get(0).getIp(),ChordManager.getFingerTable().get(0).getPort()));
-            //} else if(res instanceof LookupMessage) {
-            //    MessageForwarder.sendMessage(new DeleteMessage(hashfile,res.getIpAddress(),res.getPort()));
-            //}
-
-        //}
     }
    
     @Override

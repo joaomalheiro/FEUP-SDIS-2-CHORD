@@ -48,7 +48,6 @@ public class Delete implements Runnable{
             //} else if(res instanceof LookupMessage) {
             //    MessageForwarder.sendMessage(new DeleteMessage(hashfile,res.getIpAddress(),res.getPort()));
           //  }
-
         //}
     }
 }

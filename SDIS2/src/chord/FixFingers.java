@@ -43,7 +43,7 @@ public class FixFingers implements Runnable {
             e.printStackTrace();
         }
 
-        System.out.println("Key = " + key);
+        //System.out.println("Key = " + key);
         //System.out.println(res);
 
         if(res != null){
@@ -58,6 +58,6 @@ public class FixFingers implements Runnable {
             }
         }
 
-        ChordManager.printFingerTable();
+        //ChordManager.printFingerTable();
     }
 }
