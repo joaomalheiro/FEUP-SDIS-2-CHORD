@@ -22,6 +22,7 @@ public class FixFingers implements Runnable {
         index++;
 
         if(index == ChordManager.getM() ) {
+            ChordManager.printFingerTable();
             index = 0;
         }
 
