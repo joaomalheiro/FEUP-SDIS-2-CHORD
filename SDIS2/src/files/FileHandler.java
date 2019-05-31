@@ -92,7 +92,7 @@ public class FileHandler {
 
         Path path = Paths.get("./testFiles/" + filename);
 
-        return String.valueOf(Files.getLastModifiedTime(path));
+        return String.valueOf(Files.size(path));
     }
 
     public static void createDir(String type) {
