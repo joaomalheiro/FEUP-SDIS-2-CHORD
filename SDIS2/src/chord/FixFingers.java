@@ -23,7 +23,6 @@ public class FixFingers implements Runnable {
 
         if(index == ChordManager.getM() ) {
             index = 0;
-            //ChordManager.printFingerTable();
         }
 
         String key = ChordManager.calculateNextKey(ChordManager.peerHash, index, ChordManager.getM() );
@@ -59,6 +58,6 @@ public class FixFingers implements Runnable {
             }
         }
 
-        //ChordManager.printFingerTable();
+        ChordManager.printFingerTable();
     }
 }

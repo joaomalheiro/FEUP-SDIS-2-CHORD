@@ -24,15 +24,14 @@ public class DeleteHandler implements Runnable{
 	}
 	@Override
 	public void run() {
-		for(int i = 0; i < 4;i++){
-			BackupMessage message = new BackupMessage(ci, hashfile, repDegree, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort());
-			MessageForwarder.sendMessage(message);
+		
 			try {
-				TimeUnit.SECONDS.sleep(4);
+				TimeUnit.SECONDS.sleep(2);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+			BackupMessage message = new BackupMessage(ci, hashfile, repDegree, content, ChordManager.getFingerTable().get(0).getIp(), ChordManager.getFingerTable().get(0).getPort());
+			MessageForwarder.sendMessage(message);
 	}
 
 }
